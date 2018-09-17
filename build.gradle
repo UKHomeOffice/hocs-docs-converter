@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.0.3.RELEASE'
+		springBootVersion = '2.0.5.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -22,15 +22,22 @@ sourceCompatibility = 1.8
 repositories {
 	mavenCentral()
 }
-
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.boot:spring-boot-starter-web')
+	compile("org.springframework.boot:spring-boot-starter-web") {
+		exclude module: "spring-boot-starter-tomcat"
+	}
+
+	compile('org.springframework.boot:spring-boot-starter-undertow')
 	compile('net.logstash.logback:logstash-logback-encoder:5.1')
+	compile('org.springframework.boot:spring-boot-starter-json')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+
 	compile group: 'org.jodconverter', name: 'jodconverter-spring-boot-starter', version: '4.2.0'
 	compile group: 'org.jodconverter', name: 'jodconverter-local', version: '4.2.0'
 	
 	compileOnly('org.projectlombok:lombok')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
 
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('org.assertj:assertj-core')
 }
