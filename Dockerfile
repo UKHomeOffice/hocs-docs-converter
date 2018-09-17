@@ -1,20 +1,20 @@
 FROM quay.io/ukhomeofficedigital/openjdk8
 
 
-ENV USER user_hocs_docs_converter
-ENV GROUP group_hocs_docs_converter
-ENV NAME hocs-docs-converter
+ENV USER user_hocs_docs
+ENV USER_ID 1000
+ENV GROUP group_hocs_docs
+ENV NAME hocs-docs
 ENV JAR_PATH build/libs
 
 RUN yum update -y glibc && \
     yum update -y nss && \
-    yum update -y bind-license && \
-    yum install -y libreoffice
+    yum update -y bind-license
 
 WORKDIR /app
 
 RUN groupadd -r ${GROUP} && \
-    useradd -r -g ${GROUP} ${USER} -d /app && \
+    useradd -r -u ${USER_ID} -g ${GROUP} ${USER} -d /app && \
     mkdir -p /app && \
     chown -R ${USER}:${GROUP} /app
 
@@ -26,6 +26,6 @@ RUN chmod a+x /app/scripts/*
 
 EXPOSE 8000
 
-USER ${USER}
+USER ${USER_ID}
 
 CMD /app/scripts/run.sh
