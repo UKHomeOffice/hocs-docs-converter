@@ -47,7 +47,7 @@ pipeline:
   clone-kube-project:
     image: plugins/git
     commands:
-      - git clone https://github.com/UKHomeOffice/hocs-docs-converter.git
+      - git clone https://github.com/UKHomeOffice/kube-hocs-docs-converter.git
     when:
       event: [push, tag, deployment]
 
@@ -70,7 +70,7 @@ pipeline:
   deployment:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
     environment:
-      - KUBE_NAMESPACE=hocs-docs-${DRONE_DEPLOY_TO}
+      - KUBE_NAMESPACE=cs-${DRONE_DEPLOY_TO}
       - ENVIRONMENT=${DRONE_DEPLOY_TO}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
@@ -81,20 +81,20 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: [dev, test, preprod]
+      environment: [dev, qa]
 
   deploy-to-prod:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
     environment:
       - KUBE_NAMESPACE=cs-prod
-      - ENVIRONMENT=pr
+      - ENVIRONMENT=prod
       - VERSION=${IMAGE_VERSION}
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_docs_converter_pr
+      - hocs_docs_converter_prod
     commands:
       - cd kube-hocs-docs-converter
       - ./deploy.sh
     when:
       event: deployment
-      environment: pr
+      environment: prod
