@@ -26,6 +26,7 @@ pipeline:
     commands:
       - docker login -u="ukhomeofficedigital+hocs" -p=$${DOCKER_PASSWORD} quay.io
       - docker tag hocs-docs-converter quay.io/ukhomeofficedigital/hocs-docs-converter:build-$${DRONE_BUILD_NUMBER}
+      - docker tag hocs-docs-converter quay.io/ukhomeofficedigital/hocs-docs-converter:latest
       - docker push quay.io/ukhomeofficedigital/hocs-docs-converter:build-$${DRONE_BUILD_NUMBER}
     when:
       branch: master
