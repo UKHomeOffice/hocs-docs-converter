@@ -16,12 +16,17 @@ else
         echo "deploying ${VERSION} to test namespace, using HOCS_DOCS_CONVERTER_QA drone secret"
         export KUBE_TOKEN=${HOCS_DOCS_CONVERTER_QA}
         export REPLICAS="2"
-    else
+    if [[ ${ENVIRONMENT} == "demo" ]] ; then
+        echo "deploy ${VERSION} to demo namespace, using HOCS_DOCS_CONVERTER_DEMO drone secret"
+        export KUBE_TOKEN=${HOCS_DOCS_CONVERTER_DEMO}
+        export REPLICAS="1"
+    if [[ ${ENVIRONMENT} == "dev" ]] ; then
         echo "deploy ${VERSION} to dev namespace, using HOCS_DOCS_CONVERTER_DEV drone secret"
         export KUBE_TOKEN=${HOCS_DOCS_CONVERTER_DEV}
         export REPLICAS="1"
+    else
+        echo "Unable to find environment: ${ENVIRONMENT}"        
     fi
-    
 fi
 
 if [[ -z ${KUBE_TOKEN} ]] ; then
