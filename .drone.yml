@@ -77,13 +77,14 @@ pipeline:
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
       - hocs_docs_converter_dev
+      - hocs_docs_converter_demo      
       - hocs_docs_converter_qa
     commands:
       - cd kube-hocs-docs-converter
       - ./deploy.sh
     when:
       event: deployment
-      environment: [dev, qa]
+      environment: [dev, qa, demo]
 
   deploy-to-prod:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
