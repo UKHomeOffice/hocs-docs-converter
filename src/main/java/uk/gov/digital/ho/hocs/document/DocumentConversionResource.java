@@ -38,6 +38,7 @@ public class DocumentConversionResource {
             converter
                     .convert(file.getInputStream())
                     .as(
+
                         DefaultDocumentFormatRegistry.getFormatByExtension(
                             FilenameUtils.getExtension(file.getOriginalFilename())))
                     .to(baos)
