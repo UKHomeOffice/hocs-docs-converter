@@ -32,8 +32,8 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-json')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 
-	compile group: 'org.jodconverter', name: 'jodconverter-spring-boot-starter', version: '4.2.0'
-	compile group: 'org.jodconverter', name: 'jodconverter-local', version: '4.2.0'
+	compile group: 'org.jodconverter', name: 'jodconverter-spring-boot-starter', version: '4.2.2'
+	compile group: 'org.jodconverter', name: 'jodconverter-local', version: '4.2.2'
 	
 	compileOnly('org.projectlombok:lombok')
 
