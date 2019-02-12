@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.document.LogEvent.*;
+
 @RestController
 @Slf4j
 public class DocumentConversionResource {
@@ -38,13 +41,11 @@ public class DocumentConversionResource {
             converter
                     .convert(file.getInputStream())
                     .as(
-
                         DefaultDocumentFormatRegistry.getFormatByExtension(
                             FilenameUtils.getExtension(file.getOriginalFilename())))
                     .to(baos)
                     .as(outputFormat)
                     .execute();
-
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType(outputFormat.getMediaType()));
@@ -55,11 +56,11 @@ public class DocumentConversionResource {
                         + outputFormat.getExtension());
             baos.writeTo(response.getOutputStream());
             response.setStatus(HttpStatus.OK.value());
+            log.info("Document Conversion complete for {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
             response.flushBuffer();
 
-
     } catch (OfficeException | IOException e) {
-            log.error("Error converting document %s", e.getMessage());
+            log.error("Error converting document {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_FAILURE));
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
