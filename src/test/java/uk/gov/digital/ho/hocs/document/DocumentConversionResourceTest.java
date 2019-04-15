@@ -10,9 +10,6 @@ import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -23,7 +20,7 @@ public class DocumentConversionResourceTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void shouldReturn200ForValidFileUpload() throws IOException, URISyntaxException {
+    public void shouldReturn200ForValidFileUpload() {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
@@ -40,7 +37,7 @@ public class DocumentConversionResourceTest {
     }
 
     @Test
-    public void shouldReturn200ForTIF() throws IOException, URISyntaxException {
+    public void shouldReturn200ForTIF() {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
@@ -57,7 +54,7 @@ public class DocumentConversionResourceTest {
     }
 
     @Test
-    public void shouldReturn200ForJPEG() throws IOException, URISyntaxException {
+    public void shouldReturn200ForJPEG() {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
@@ -74,7 +71,7 @@ public class DocumentConversionResourceTest {
     }
 
     @Test
-    public void shouldReturn200ForDOC() throws IOException, URISyntaxException {
+    public void shouldReturn200ForDOC() {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
@@ -91,7 +88,7 @@ public class DocumentConversionResourceTest {
     }
 
     @Test
-    public void shouldReturn200ForDOCX() throws IOException, URISyntaxException {
+    public void shouldReturn200ForDOCX() {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
@@ -104,11 +101,10 @@ public class DocumentConversionResourceTest {
                 String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
     }
 
     @Test
-    public void shouldReturn200ForPDF() throws IOException, URISyntaxException {
+    public void shouldReturn200ForPDF() {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
@@ -125,7 +121,7 @@ public class DocumentConversionResourceTest {
     }
 
     @Test
-    public void shouldReturn500ForBadFileExtensions() throws IOException, URISyntaxException {
+    public void shouldReturn400ForBadFileExtensions() {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
@@ -137,7 +133,24 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void shouldReturn400ForEmptyFileExtensions() {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "multipart/form-data");
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        map.set("file", new FileSystemResource("testdata/sample"));
+
+        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
     }
 
