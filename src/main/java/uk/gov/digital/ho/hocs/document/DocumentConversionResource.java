@@ -34,36 +34,52 @@ public class DocumentConversionResource {
     }
 
     @PostMapping("/uploadFile")
-    public void uploadFile(@RequestParam("file") MultipartFile file, HttpServletResponse response)  {
+    public void uploadFile(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
 
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+            if(fileExtension == null) {
+                log.info("Cannot convert document {}, file has no extension", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.flushBuffer();
+                return;
+            }
+
+            DocumentFormat format = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
+            if(format == null) {
+                log.info("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.flushBuffer();
+                return;
+            }
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             converter
-                    .convert(file.getInputStream())
-                    .as(
-                        DefaultDocumentFormatRegistry.getFormatByExtension(
-                            FilenameUtils.getExtension(file.getOriginalFilename())))
+                    .convert(file.getInputStream(), true)
+                    .as(format)
                     .to(baos)
                     .as(outputFormat)
                     .execute();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType(outputFormat.getMediaType()));
-            headers.add(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename="
-                        + FilenameUtils.getBaseName(file.getOriginalFilename())
-                        + "."
-                        + outputFormat.getExtension());
+            setResponseHeaders(file.getOriginalFilename(), response);
             baos.writeTo(response.getOutputStream());
             response.setStatus(HttpStatus.OK.value());
             log.info("Document Conversion complete for {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
             response.flushBuffer();
 
-    } catch (OfficeException | IOException e) {
-            log.error("Error converting document {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_FAILURE));
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-    }
+        } catch (OfficeException | IOException e) {
+                log.error("Error converting document {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_FAILURE), value(EXCEPTION, e.toString()));
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
 
     }
 
+    private void setResponseHeaders(String filename, HttpServletResponse response) {
+
+        response.setContentType(outputFormat.getMediaType());
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename="
+                    + FilenameUtils.getBaseName(filename)
+                    + "."
+                    + outputFormat.getExtension());
+    }
 }
