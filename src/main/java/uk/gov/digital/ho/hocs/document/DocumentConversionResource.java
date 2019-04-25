@@ -37,7 +37,7 @@ public class DocumentConversionResource {
 
             String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
             if(fileExtension == null) {
-                log.info("Cannot convert document {}, file has no extension", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+                log.warn("Cannot convert document {}, file has no extension", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 response.flushBuffer();
                 return;
@@ -45,7 +45,7 @@ public class DocumentConversionResource {
 
             DocumentFormat format = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
             if(format == null) {
-                log.info("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+                log.warn("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 response.flushBuffer();
                 return;
