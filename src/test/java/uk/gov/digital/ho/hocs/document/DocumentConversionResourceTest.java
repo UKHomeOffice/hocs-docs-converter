@@ -42,7 +42,7 @@ public class DocumentConversionResourceTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-        map.set("file", new FileSystemResource("testdata/sample.tif"));
+        map.set("file", new FileSystemResource("classpath:testdata/sample.tif"));
 
         ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
                 HttpMethod.POST,
