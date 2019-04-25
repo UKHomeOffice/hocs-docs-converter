@@ -36,7 +36,7 @@ public class DocumentConversionResourceTest {
     @Value("classpath:testdata/sample.pdf")
     private Resource pdf;
 
-    @Value("classpath:testdata/sample.qa")
+    @Value("classpath:testdata/sample.qt")
     private Resource qt;
 
     @Value("classpath:testdata/sample")
