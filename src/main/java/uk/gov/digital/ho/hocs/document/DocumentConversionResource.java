@@ -36,21 +36,22 @@ public class DocumentConversionResource {
     @PostMapping("/uploadFile")
     public void uploadFile(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
 
-        String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-        if (fileExtension == null) {
-            log.warn("Cannot convert document {}, file has no extension", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.flushBuffer();
-            return;
-        }
 
-        DocumentFormat format = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
-        if (format == null) {
-            log.warn("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.flushBuffer();
-            return;
-        }
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+            if(fileExtension == null) {
+                log.warn("Cannot convert document {}, file has no extension", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.flushBuffer();
+                return;
+            }
+
+            DocumentFormat format = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
+            if(format == null) {
+                log.warn("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.flushBuffer();
+                return;
+            }
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             converter
