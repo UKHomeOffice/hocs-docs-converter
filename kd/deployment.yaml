@@ -121,7 +121,7 @@ spec:
           ports:
             - name: https
               containerPort: 10443
-        - name: hocs-docs
+        - name: hocs-docs-converter
           image: quay.io/ukhomeofficedigital/hocs-docs-converter:{{.VERSION}}
           imagePullPolicy: Always
           securityContext:
@@ -132,7 +132,7 @@ spec:
                 - SETGID
           env:
             - name: JAVA_OPTS
-              value: '-Xms384m -Xmx1536m -XX:+UseG1GC -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
+              value: '-Xms384m -Xmx3796m -XX:+UseG1GC -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: JDK_TRUST_FILE
               value: '/etc/keystore/truststore.jks'
             - name: SERVER_PORT
