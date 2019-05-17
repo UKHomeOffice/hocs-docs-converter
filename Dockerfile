@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/openjdk8
+FROM quay.io/ukhomeofficedigital/hocs-libreoffice
 
 ENV USER user_hocs_docs
 ENV USER_ID 1000
@@ -8,8 +8,7 @@ ENV JAR_PATH build/libs
 
 RUN yum update -y glibc && \
     yum update -y nss && \
-    yum update -y bind-license && \
-    yum install -y libreoffice
+    yum update -y bind-license
 
 WORKDIR /app
 
