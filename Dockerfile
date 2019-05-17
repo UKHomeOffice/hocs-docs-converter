@@ -3,7 +3,7 @@ FROM quay.io/ukhomeofficedigital/hocs-libreoffice
 ENV USER user_hocs_docs
 ENV USER_ID 1000
 ENV GROUP group_hocs_docs
-ENV NAME hocs-docs
+ENV NAME hocs-docs-converter
 ENV JAR_PATH build/libs
 
 RUN yum update -y glibc && \
