@@ -47,6 +47,10 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
+    <logger name="org.jodconverter" additivity="false" level="WARN">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
     <logger name="com.zaxxer" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
