@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/hocs-libreoffice:build-6
+FROM quay.io/ukhomeofficedigital/hocs-libreoffice
 
 ENV USER user_hocs_docs
 ENV USER_ID 1000
