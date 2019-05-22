@@ -53,7 +53,7 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(docx.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+        ResponseEntity<String> response = restTemplate.exchange("/convert",
                 HttpMethod.POST,
                 new HttpEntity<>(map, headers),
                 String.class);
@@ -70,7 +70,7 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(tiff.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+        ResponseEntity<String> response = restTemplate.exchange("/convert",
                 HttpMethod.POST,
                 new HttpEntity<>(map, headers),
                 String.class);
@@ -87,7 +87,7 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(jpg.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+        ResponseEntity<String> response = restTemplate.exchange("/convert",
                 HttpMethod.POST,
                 new HttpEntity<>(map, headers),
                 String.class);
@@ -104,7 +104,7 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(doc.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+        ResponseEntity<String> response = restTemplate.exchange("/convert",
                 HttpMethod.POST,
                 new HttpEntity<>(map, headers),
                 String.class);
@@ -121,7 +121,7 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(docx.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+        ResponseEntity<String> response = restTemplate.exchange("/convert",
                 HttpMethod.POST,
                 new HttpEntity<>(map, headers),
                 String.class);
@@ -137,7 +137,7 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(pdf.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+        ResponseEntity<String> response = restTemplate.exchange("/convert",
                 HttpMethod.POST,
                 new HttpEntity<>(map, headers),
                 String.class);
@@ -154,7 +154,7 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(qt.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+        ResponseEntity<String> response = restTemplate.exchange("/convert",
                 HttpMethod.POST,
                 new HttpEntity<>(map, headers),
                 String.class);
@@ -171,7 +171,7 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(none.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/uploadFile",
+        ResponseEntity<String> response = restTemplate.exchange("/convert",
                 HttpMethod.POST,
                 new HttpEntity<>(map, headers),
                 String.class);

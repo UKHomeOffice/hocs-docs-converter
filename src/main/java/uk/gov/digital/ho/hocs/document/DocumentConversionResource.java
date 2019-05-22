@@ -33,8 +33,8 @@ public class DocumentConversionResource {
         this.converter = converter;
     }
 
-    @PostMapping("/uploadFile")
-    public void uploadFile(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
+    @PostMapping("/convert")
+    public void convert(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
 
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
         if (fileExtension == null) {
