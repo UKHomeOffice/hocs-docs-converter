@@ -8,5 +8,5 @@ public class HocsDocsConversionApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(HocsDocsConversionApplication.class, args);
-	} 
+	}
 }
