@@ -32,7 +32,7 @@ public class DocumentConversionResource {
     }
 
 
-    // method to convert input file
+    // method to convert input file.
     @PostMapping("/convert")
     public void convert(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
 
