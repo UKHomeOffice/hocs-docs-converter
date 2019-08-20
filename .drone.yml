@@ -1,7 +1,7 @@
 pipeline:
 
   build-project:
-    image: quay.io/ukhomeofficedigital/hocs-libreoffice:build-172
+    image: quay.io/ukhomeofficedigital/hocs-libreoffice:build-24
     commands:
       - ./gradlew build
     when:
