@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.document;
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,33 +21,35 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@RunWith (SpringRunner.class)
+@SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DocumentConversionResourceTest {
 
-    @Value("classpath:testdata/sample.docx")
+    @Value ("classpath:testdata/sample.docx")
     private Resource docx;
 
-    @Value("classpath:testdata/sample.tif")
+    @Value ("classpath:testdata/sample.tif")
     private Resource tiff;
 
-    @Value("classpath:testdata/sample.tif.pdf")
-    private Resource convertedTiff;
+    @Value ("classpath:testdata/sample.tif.pdf")
+    private Resource tiffPdf;
 
-    @Value("classpath:testdata/sample.jpg")
+    @Value ("classpath:testdata/sample.jpg")
     private Resource jpg;
 
-    @Value("classpath:testdata/sample.doc")
+    @Value ("classpath:testdata/sample.doc")
     private Resource doc;
 
-    @Value("classpath:testdata/sample.pdf")
+    @Value ("classpath:testdata/sample.pdf")
     private Resource pdf;
 
-    @Value("classpath:testdata/sample.qt")
+    @Value ("classpath:testdata/sample.qt")
     private Resource qt;
 
-    @Value("classpath:testdata/sample")
+    @Value ("classpath:testdata/sample")
     private Resource none;
 
     @Autowired
@@ -66,9 +67,9 @@ public class DocumentConversionResourceTest {
         map.set("file", new FileSystemResource(docx.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
-                HttpMethod.POST,
-                new HttpEntity<>(map, headers),
-                String.class);
+                                                                HttpMethod.POST,
+                                                                new HttpEntity<>(map, headers),
+                                                                String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -203,15 +204,15 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(tiff.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/convert",
+        ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
                                                                 HttpMethod.POST,
                                                                 new HttpEntity<>(map, headers),
-                                                                String.class);
+                                                                byte[].class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        final byte[] tiffBytes = FileUtils.readFileToByteArray(convertedTiff.getFile());
-        Assert.assertArrayEquals(tiffBytes, response.getBody().getBytes());
+        final byte[] tiffBytes = IOUtils.toByteArray(new FileInputStream(tiffPdf.getFile()));
+        assertEquals(tiffBytes.length, response.getBody().length);
     }
 
     @Test
@@ -222,15 +223,15 @@ public class DocumentConversionResourceTest {
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(pdf.getFile()));
 
-        ResponseEntity<String> response = restTemplate.exchange("/convert",
+        ResponseEntity<byte[]> converted = restTemplate.exchange("/convert",
                                                                 HttpMethod.POST,
                                                                 new HttpEntity<>(map, headers),
-                                                                String.class);
+                                                                byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(converted.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        final byte[] tiffBytes = FileUtils.readFileToByteArray(pdf.getFile());
-        Assert.assertArrayEquals(tiffBytes, response.getBody().getBytes());
+        final byte[] originalBytes = FileUtils.readFileToByteArray(pdf.getFile());
+        assertArrayEquals(originalBytes, converted.getBody());
     }
 
     @Test
@@ -238,9 +239,9 @@ public class DocumentConversionResourceTest {
         FileInputStream inputStream = new FileInputStream(tiff.getFile());
         final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("tiff", inputStream);
         inputStream.close();
-        final byte[] tiffBytes = IOUtils.toByteArray(new FileInputStream(convertedTiff.getFile()));
-        assertThat(tiffBytes.length == convertedBytes.length);
-        Assert.assertArrayEquals(tiffBytes, convertedBytes);
+        final byte[] tiffBytes = IOUtils.toByteArray(new FileInputStream(tiffPdf.getFile()));
+        assertEquals(tiffBytes.length, convertedBytes.length);
+        // the contents cannot be compared as there are timestamps in the file
     }
 
     @Test
@@ -249,7 +250,7 @@ public class DocumentConversionResourceTest {
         final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("pdf", inputStream);
         inputStream.close();
         final byte[] pdfBytes = IOUtils.toByteArray(new FileInputStream(pdf.getFile()));
-        assertThat(pdfBytes.length == convertedBytes.length);
-        Assert.assertArrayEquals(pdfBytes, convertedBytes);
+        assertEquals(pdfBytes.length, convertedBytes.length);
+        assertArrayEquals(pdfBytes, convertedBytes); // same file - same timestamp - can compare contents
     }
 }
