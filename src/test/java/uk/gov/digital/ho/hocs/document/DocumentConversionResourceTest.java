@@ -17,7 +17,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -67,9 +66,9 @@ public class DocumentConversionResourceTest {
         map.set("file", new FileSystemResource(docx.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                String.class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -88,9 +87,6 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        try (FileOutputStream fos = new FileOutputStream("./problem.pdf")) {
-            fos.write(response.getBody().getBytes());
-        }
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
