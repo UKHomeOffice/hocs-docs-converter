@@ -62,7 +62,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(docx.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -79,7 +79,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(tiff.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -96,7 +96,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(jpg.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -113,7 +113,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(doc.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -130,7 +130,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(docx.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -146,7 +146,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(pdf.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -163,7 +163,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(qt.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -180,7 +180,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
         map.set("file", new FileSystemResource(none.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
