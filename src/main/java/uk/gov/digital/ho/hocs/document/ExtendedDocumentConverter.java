@@ -15,10 +15,10 @@ import java.io.InputStream;
 
 /**
  *  This class was added because JOD Converter (the implemented converter) is not functioning well with
- *  multi-page file conversions.
+ *  multi-page TIFF file conversions.
  *
- *  It used the iText converter, which creates a new PDF and then adds the pages from the input file.
- *  In testing, it was able to convert files successfully that were not converted by JOD.
+ *  It uses the iText converter, which creates a new PDF and then adds the pages from the input file.
+ *  In testing it was able to convert TIFF files successfully that were not converted by JOD.
  *
  *  Furthermore, this module also takes care of shortcutting the process of converting a PDF.
  *  It just copies the current contents out the stream again, so that no conversion takes place.
@@ -26,6 +26,7 @@ import java.io.InputStream;
  *  The immediate requirement is to convert the TIF and PDF files, but moving forward we may add
  *  other extensions that JOD does not convert correctly.
  *
+ *  iText supports PNG, GIF, JBIG & BMP
  */
 
 @Component
@@ -42,7 +43,7 @@ public class ExtendedDocumentConverter {
 
 
     boolean isSupported(String fileExtension) {
-        if (fileExtension == null || fileExtension.isEmpty()) {
+        if (fileExtension == null || fileExtension.trim().isEmpty()) {
             return false;
         }
         final String extension = fileExtension.trim();
