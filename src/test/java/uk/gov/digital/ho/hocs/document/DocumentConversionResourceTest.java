@@ -23,32 +23,32 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-@RunWith (SpringRunner.class)
-@SpringBootTest (webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DocumentConversionResourceTest {
 
-    @Value ("classpath:testdata/sample.docx")
+    @Value("classpath:testdata/sample.docx")
     private Resource docx;
 
-    @Value ("classpath:testdata/sample.tif")
+    @Value("classpath:testdata/sample.tif")
     private Resource tiff;
 
-    @Value ("classpath:testdata/sample.tif.pdf")
+    @Value("classpath:testdata/sample.tif.pdf")
     private Resource tiffPdf;
 
-    @Value ("classpath:testdata/sample.jpg")
+    @Value("classpath:testdata/sample.jpg")
     private Resource jpg;
 
-    @Value ("classpath:testdata/sample.doc")
+    @Value("classpath:testdata/sample.doc")
     private Resource doc;
 
-    @Value ("classpath:testdata/sample.pdf")
+    @Value("classpath:testdata/sample.pdf")
     private Resource pdf;
 
-    @Value ("classpath:testdata/sample.qt")
+    @Value("classpath:testdata/sample.qt")
     private Resource qt;
 
-    @Value ("classpath:testdata/sample")
+    @Value("classpath:testdata/sample")
     private Resource none;
 
     @Autowired
