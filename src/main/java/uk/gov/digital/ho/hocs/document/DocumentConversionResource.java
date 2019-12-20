@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.document;
 
+import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.jodconverter.DocumentConverter;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.document.LogEvent.*;
@@ -24,13 +27,15 @@ import static uk.gov.digital.ho.hocs.document.LogEvent.*;
 public class DocumentConversionResource {
 
     private final DocumentConverter converter;
+    private final ExtendedDocumentConverter extendedDocumentConverter;
+
     private static final DocumentFormat outputFormat = DefaultDocumentFormatRegistry.PDF;
 
     @Autowired
-    public DocumentConversionResource(DocumentConverter converter) {
+    public DocumentConversionResource(DocumentConverter converter, ExtendedDocumentConverter extendedDocumentConverter) {
         this.converter = converter;
+        this.extendedDocumentConverter = extendedDocumentConverter;
     }
-
 
     // method to convert file
     @PostMapping("/convert")
@@ -44,6 +49,23 @@ public class DocumentConversionResource {
             return;
         }
 
+        if (extendedDocumentConverter.isSupported(fileExtension)) {
+            InputStream byteStream = new ByteArrayInputStream(file.getBytes());
+            try {
+                final byte[] convertedBytes = extendedDocumentConverter.convertToPdf(fileExtension, byteStream);
+                response.getOutputStream().write(convertedBytes);
+                response.setStatus(HttpStatus.OK.value());
+                response.flushBuffer();
+                byteStream.close();
+                return;
+            } catch (DocumentException e) {
+                log.info("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.flushBuffer();
+                byteStream.close();
+                return;
+            }
+        }
         DocumentFormat format = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
         if (format == null) {
             log.info("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));

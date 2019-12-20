@@ -1,5 +1,8 @@
 package uk.gov.digital.ho.hocs.document;
 
+import com.itextpdf.text.DocumentException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +16,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,6 +32,9 @@ public class DocumentConversionResourceTest {
 
     @Value("classpath:testdata/sample.tif")
     private Resource tiff;
+
+    @Value("classpath:testdata/sample.tif.pdf")
+    private Resource tiffPdf;
 
     @Value("classpath:testdata/sample.jpg")
     private Resource jpg;
@@ -44,6 +53,9 @@ public class DocumentConversionResourceTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private ExtendedDocumentConverter extendedDocumentConverter;
 
     @Test
     public void shouldReturn200ForValidFileUpload() throws IOException {
@@ -180,4 +192,61 @@ public class DocumentConversionResourceTest {
 
     }
 
+    @Test
+    public void testOkExtDocConverterTiffAndContents() throws IOException {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "multipart/form-data");
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.set("file", new FileSystemResource(tiff.getFile()));
+
+        ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
+                                                                HttpMethod.POST,
+                                                                new HttpEntity<>(map, headers),
+                                                                byte[].class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final byte[] tiffBytes = IOUtils.toByteArray(new FileInputStream(tiffPdf.getFile()));
+        assertEquals(tiffBytes.length, response.getBody().length);
+    }
+
+    @Test
+    public void testOkExtDocConverterPdfAndContents() throws IOException {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "multipart/form-data");
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.set("file", new FileSystemResource(pdf.getFile()));
+
+        ResponseEntity<byte[]> converted = restTemplate.exchange("/convert",
+                                                                HttpMethod.POST,
+                                                                new HttpEntity<>(map, headers),
+                                                                byte[].class);
+
+        assertThat(converted.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        final byte[] originalBytes = FileUtils.readFileToByteArray(pdf.getFile());
+        assertArrayEquals(originalBytes, converted.getBody());
+    }
+
+    @Test
+    public void textExtendedDocumentConverterTiffDirectly() throws IOException, DocumentException {
+        FileInputStream inputStream = new FileInputStream(tiff.getFile());
+        final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("tiff", inputStream);
+        inputStream.close();
+        final byte[] tiffBytes = IOUtils.toByteArray(new FileInputStream(tiffPdf.getFile()));
+        assertEquals(tiffBytes.length, convertedBytes.length);
+        // the contents cannot be compared as there are timestamps in the file
+    }
+
+    @Test
+    public void textExtendedDocumentConverterPdfDirectly() throws IOException, DocumentException {
+        FileInputStream inputStream = new FileInputStream(pdf.getFile());
+        final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("pdf", inputStream);
+        inputStream.close();
+        final byte[] pdfBytes = IOUtils.toByteArray(new FileInputStream(pdf.getFile()));
+        assertEquals(pdfBytes.length, convertedBytes.length);
+        assertArrayEquals(pdfBytes, convertedBytes); // same file - same timestamp - can compare contents
+    }
 }
