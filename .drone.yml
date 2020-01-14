@@ -103,7 +103,7 @@ pipeline:
       event: deployment
       environment: [dev, demo]
 
-  deploy-to-qa:
+  deploy-to-cs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.12.2
     environment:
       - KUBE_NAMESPACE=cs-qa
@@ -119,6 +119,25 @@ pipeline:
     when:
       event: deployment
       environment: qa
+      space: cs
+
+  deploy-to-wcs-qa:
+    image: quay.io/ukhomeofficedigital/kd:v1.12.2
+    environment:
+      - KUBE_NAMESPACE=wcs-qa
+      - ENVIRONMENT=qa
+      - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    secrets:
+      - hocs_docs_converter_qa
+    commands:
+      - source version.txt
+      - echo $VERSION
+      - cd kube-hocs-docs-converter
+      - ./deploy.sh
+    when:
+      event: deployment
+      environment: qa
+      space: wcs
 
   deploy-to-prod:
     image: quay.io/ukhomeofficedigital/kd:v1.12.2
