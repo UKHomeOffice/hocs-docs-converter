@@ -1,5 +1,10 @@
 FROM quay.io/ukhomeofficedigital/hocs-libreoffice:build-24
 
+ENV TZ Europe/London
+ENV LANGUAGE en_GB.UTF-8
+ENV LANG en_GB.UTF-8
+ENV LC_ALL en_GB.UTF-8
+
 ENV USER user_hocs_docs
 ENV USER_ID 1000
 ENV GROUP group_hocs_docs
