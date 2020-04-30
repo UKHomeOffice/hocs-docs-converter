@@ -4,7 +4,6 @@ metadata:
   labels:
     app: hocs-docs-converter
   name: hocs-docs-converter
-  namespace: ${KUBE_NAMESPACE}
 spec:
   maxReplicas: 10
   minReplicas: 1
