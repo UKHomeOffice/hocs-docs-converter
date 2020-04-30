@@ -86,10 +86,10 @@ spec:
               readOnly: true
           resources:
             limits:
-              memory: 6Mi
+              memory: 16Mi
               cpu: 150m
             requests:
-              memory: 5Mi
+              memory: 8Mi
               cpu: 100m
         - name: proxy
           image: quay.io/ukhomeofficedigital/nginx-proxy:v3.4.12
@@ -102,10 +102,10 @@ spec:
                 - SETGID
           resources:
             limits:
-              memory: 5Mi
+              memory: 16Mi
               cpu: 200m
             requests:
-              memory: 3Mi
+              memory: 4Mi
               cpu: 100m
           env:
             - name: PROXY_SERVICE_HOST
