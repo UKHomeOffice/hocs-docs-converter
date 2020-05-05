@@ -54,7 +54,7 @@ spec:
               readOnly: true
           resources:
             limits:
-              memory: 50Mi
+              memory: 48Mi
               cpu: 500m
             requests:
               memory: 15Mi
@@ -86,8 +86,8 @@ spec:
               readOnly: true
           resources:
             limits:
-              memory: 16Mi
-              cpu: 150m
+              memory: 32Mi
+              cpu: 400m
             requests:
               memory: 8Mi
               cpu: 100m
@@ -102,8 +102,8 @@ spec:
                 - SETGID
           resources:
             limits:
-              memory: 16Mi
-              cpu: 200m
+              memory: 32Mi
+              cpu: 400m
             requests:
               memory: 4Mi
               cpu: 100m
@@ -147,7 +147,7 @@ spec:
                 - SETGID
           env:
             - name: JAVA_OPTS
-              value: '-Xms384m -Xmx3796m -XX:+UseG1GC -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
+              value: '-Xms384m -Xmx1536m -XX:+UseG1GC -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: JDK_TRUST_FILE
               value: '/etc/keystore/truststore.jks'
             - name: SERVER_PORT
@@ -156,11 +156,11 @@ spec:
               value: 'false'
           resources:
             limits:
-              cpu: 850m
-              memory: 1024Mi
+              cpu: 900m
+              memory: 1536Mi
             requests:
               cpu: 100m
-              memory: 700Mi
+              memory: 640Mi
           ports:
             - name: http
               containerPort: 8080
