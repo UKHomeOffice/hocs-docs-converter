@@ -100,7 +100,7 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: [cs-dev, wcs-demo, cs-dev, wcs-demo]
+      environment: [cs-dev, cs-demo, cs-dev, wcs-demo]
 
   deploy-to-cs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
