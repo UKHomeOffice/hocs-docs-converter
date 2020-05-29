@@ -58,12 +58,11 @@ pipeline:
   deploy-to-cs-dev-from-build-number:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=cs-dev
-      - ENVIRONMENT=dev
+      - ENVIRONMENT=cs-dev
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_docs_converter_dev
+      - hocs_docs_converter_cs_dev
     commands:
       - cd kube-hocs-docs-converter
       - ./deploy.sh
@@ -74,12 +73,11 @@ pipeline:
   deploy-to-wcs-dev-from-build-number:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=wcs-dev
-      - ENVIRONMENT=dev
+      - ENVIRONMENT=wcs-dev
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_docs_converter_dev
+      - hocs_docs_converter_wcs_dev
     commands:
       - cd kube-hocs-docs-converter
       - ./deploy.sh
@@ -90,26 +88,27 @@ pipeline:
   deployment:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - KUBE_NAMESPACE=cs-${DRONE_DEPLOY_TO}
       - ENVIRONMENT=${DRONE_DEPLOY_TO}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_docs_converter_dev
-      - hocs_docs_converter_demo
+      - hocs_docs_converter_cs_dev
+      - hocs_docs_converter_cs_demo
+      - hocs_docs_converter_wcs_dev
+      - hocs_docs_converter_wcs_demo
     commands:
       - cd kube-hocs-docs-converter
       - ./deploy.sh
     when:
       event: deployment
-      environment: [dev, demo]
+      environment: [cs-dev, cs-demo, wcs-dev, wcs-demo]
 
-  deploy-to-qa:
+  deploy-to-cs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - ENVIRONMENT=qa
+      - ENVIRONMENT=cs-qa
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_docs_converter_qa
+      - hocs_docs_converter_cs_qa
     commands:
       - source version.txt
       - echo $VERSION
@@ -118,15 +117,32 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: qa
+      environment: cs-qa
 
-  deploy-to-prod:
+  deploy-to-wcs-qa:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
-      - ENVIRONMENT=prod
+      - ENVIRONMENT=wcs-qa
+      - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    secrets:
+      - hocs_docs_converter_wcs_qa
+    commands:
+      - source version.txt
+      - echo $VERSION
+      - echo $KUBE_NAMESPACE
+      - cd kube-hocs-docs-converter
+      - ./deploy.sh
+    when:
+      event: deployment
+      environment: wcs-qa
+
+  deploy-to-cs-prod:
+    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    environment:
+      - ENVIRONMENT=cs-prod
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_docs_converter_prod
+      - hocs_docs_converter_cs_prod
     commands:
       - echo $VERSION
       - echo $KUBE_NAMESPACE
@@ -134,4 +150,20 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: prod
+      environment: cs-prod
+
+  deploy-to-wcs-prod:
+    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    environment:
+      - ENVIRONMENT=wcs-prod
+      - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
+    secrets:
+      - hocs_docs_converter_wcs_prod
+    commands:
+      - echo $VERSION
+      - echo $KUBE_NAMESPACE
+      - cd kube-hocs-docs-converter
+      - ./deploy.sh
+    when:
+      event: deployment
+      environment: wcs-prod
