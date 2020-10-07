@@ -28,13 +28,16 @@ public class DocumentConversionResource {
 
     private final DocumentConverter converter;
     private final ExtendedDocumentConverter extendedDocumentConverter;
+    private final MSGDocumentConverter msgDocumentConverter;
 
     private static final DocumentFormat outputFormat = DefaultDocumentFormatRegistry.PDF;
 
     @Autowired
-    public DocumentConversionResource(DocumentConverter converter, ExtendedDocumentConverter extendedDocumentConverter) {
+    public DocumentConversionResource(DocumentConverter converter, ExtendedDocumentConverter extendedDocumentConverter,
+                                      MSGDocumentConverter msgDocumentConverter) {
         this.converter = converter;
         this.extendedDocumentConverter = extendedDocumentConverter;
+        this.msgDocumentConverter = msgDocumentConverter;
     }
 
     // method to convert file
@@ -53,6 +56,23 @@ public class DocumentConversionResource {
             InputStream byteStream = new ByteArrayInputStream(file.getBytes());
             try {
                 final byte[] convertedBytes = extendedDocumentConverter.convertToPdf(fileExtension, byteStream);
+                response.getOutputStream().write(convertedBytes);
+                response.setStatus(HttpStatus.OK.value());
+                response.flushBuffer();
+                byteStream.close();
+                return;
+            } catch (DocumentException e) {
+                log.info("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+                response.flushBuffer();
+                byteStream.close();
+                return;
+            }
+        }
+        if (msgDocumentConverter.isSupported(fileExtension)) {
+            InputStream byteStream = new ByteArrayInputStream(file.getBytes());
+            try {
+                final byte[] convertedBytes = msgDocumentConverter.convertToPdf(fileExtension, byteStream);
                 response.getOutputStream().write(convertedBytes);
                 response.setStatus(HttpStatus.OK.value());
                 response.flushBuffer();
