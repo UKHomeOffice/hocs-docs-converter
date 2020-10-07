@@ -309,7 +309,8 @@ public class DocumentConversionResourceTest {
         FileInputStream inputStream = new FileInputStream(tif.getFile());
         final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("tif", inputStream);
         inputStream.close();
-        assertEquals(2511535, convertedBytes.length);
+        final byte[] pdfBytes = IOUtils.toByteArray(new FileInputStream(tifPdf.getFile()));
+        assertEquals(pdfBytes.length, convertedBytes.length);
     }
 
     @Test
@@ -336,6 +337,7 @@ public class DocumentConversionResourceTest {
         assertFalse(extendedDocumentConverter.isSupported("rtf"));
         assertFalse(extendedDocumentConverter.isSupported("txt"));
         assertFalse(extendedDocumentConverter.isSupported("docx"));
+        assertFalse(extendedDocumentConverter.isSupported("msg"));
     }
 
     @Test
