@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/hocs-libreoffice:build-24
+FROM quay.io/ukhomeofficedigital/hocs-libreoffice:build-35
 
 ENV TZ Europe/London
 ENV LANGUAGE en_GB.UTF-8
