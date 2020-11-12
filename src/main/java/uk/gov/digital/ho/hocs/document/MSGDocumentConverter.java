@@ -105,17 +105,21 @@ public class MSGDocumentConverter {
         return outputBytes;
     }
 
-    private MsgContents extractContents(Message message) {
+    private MsgContents extractContents(Message message) throws DocumentException {
+        if (message == null) {
+            throw new DocumentException("Invalid MSG Contents");
+        }
         MsgContents contents = new MsgContents();
-        contents.setFromEmail(message.getFromEmail());
-        contents.setFromEmail(contents.getFromEmail().contains("Content_Types") ? StringUtils.EMPTY : contents.getFromName());
-        contents.setToEmail(message.getToEmail());
-        contents.setToName(message.getToName());
-        contents.setBodyText(message.getBodyText());
-        contents.setFromName(message.getFromName());
-        contents.setSubject(message.getSubject());
-        contents.setBodyHTML(message.getConvertedBodyHTML());
-        contents.setAttachments(message.getAttachments());
+        contents.setFromEmail(StringUtils.defaultString(message.getFromEmail(), StringUtils.EMPTY));
+        contents.setFromName(StringUtils.defaultString(message.getFromName(), StringUtils.EMPTY));
+        contents.setToEmail(StringUtils.defaultString(message.getToEmail(), StringUtils.EMPTY));
+        contents.setToName(StringUtils.defaultString(message.getToName(), StringUtils.EMPTY));
+        contents.setBodyText(StringUtils.defaultString(message.getBodyText(), StringUtils.EMPTY));
+        contents.setSubject(StringUtils.defaultString(message.getSubject(), StringUtils.EMPTY));
+        contents.setBodyHTML(StringUtils.defaultString(message.getConvertedBodyHTML(), StringUtils.EMPTY));
+        if (message.getAttachments() != null) {
+            contents.setAttachments(message.getAttachments());
+        }
         return contents;
     }
 
