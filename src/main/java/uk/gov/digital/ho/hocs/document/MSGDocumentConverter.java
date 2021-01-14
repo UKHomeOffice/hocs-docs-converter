@@ -91,6 +91,8 @@ public class MSGDocumentConverter {
                                                                    contents.getToName() : contents.getToEmail())));
         pdf.add(new Paragraph("Subject: " + contents.getSubject()));
 
+        pdf.add(new Paragraph("Sent on: " + contents.getSentOn()));
+
         if (!parseElements(pdf, contents)) {
             pdf.add(new Paragraph(""));
             pdf.add(new Paragraph(contents.getBodyText()));
@@ -117,6 +119,7 @@ public class MSGDocumentConverter {
         contents.setBodyText(StringUtils.defaultString(message.getBodyText(), StringUtils.EMPTY));
         contents.setSubject(StringUtils.defaultString(message.getSubject(), StringUtils.EMPTY));
         contents.setBodyHTML(StringUtils.defaultString(message.getConvertedBodyHTML(), StringUtils.EMPTY));
+        contents.setSentOn(StringUtils.defaultString(String.valueOf(Message.getDateFromHeaders(message.getHeaders())), StringUtils.EMPTY));
         if (message.getAttachments() != null) {
             contents.setAttachments(message.getAttachments());
         }

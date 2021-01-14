@@ -18,6 +18,7 @@ public class MsgContents {
     private String bodyText = StringUtils.EMPTY;
     private String toEmail = StringUtils.EMPTY;
     private String toName = StringUtils.EMPTY;
+    private String sentOn = StringUtils.EMPTY;
 
     private List<Attachment> attachments = null;
 }
