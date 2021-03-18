@@ -5,7 +5,7 @@ name: build
 
 steps:
   - name: build project
-    image: quay.io/ukhomeofficedigital/hocs-libreoffice:build-35
+    image: quay.io/ukhomeofficedigital/hocs-libreoffice
     commands:
       - ./gradlew assemble --no-daemon
 
