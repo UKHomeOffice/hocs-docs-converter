@@ -5,9 +5,16 @@ name: build
 
 steps:
   - name: build project
-    image: quay.io/ukhomeofficedigital/hocs-libreoffice:build-35
+    image: quay.io/ukhomeofficedigital/hocs-libreoffice
     commands:
-      - ./gradlew build
+      - ./gradlew assemble --no-daemon
+
+  - name: test project
+    image: quay.io/ukhomeofficedigital/hocs-libreoffice
+    commands:
+      - ./gradlew check --no-daemon
+    depends_on:
+      - build project
 
   - name: build & push
     image: plugins/docker
@@ -23,7 +30,7 @@ steps:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     depends_on:
-      - build project
+      - test project
 
   - name: build & push latest
     image: plugins/docker
@@ -40,7 +47,7 @@ steps:
       branch:
         - main
     depends_on:
-      - build project
+      - test project
 
 trigger:
   event:
