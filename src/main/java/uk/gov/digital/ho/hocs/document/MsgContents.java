@@ -1,9 +1,9 @@
 package uk.gov.digital.ho.hocs.document;
 
-import com.auxilii.msgparser.attachment.Attachment;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 
 import java.util.List;
 
@@ -20,5 +20,5 @@ public class MsgContents {
     private String toName = StringUtils.EMPTY;
     private String sentOn = StringUtils.EMPTY;
 
-    private List<Attachment> attachments = null;
+    private List<OutlookAttachment> attachments = null;
 }

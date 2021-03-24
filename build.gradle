@@ -27,13 +27,13 @@ dependencies {
 	implementation('net.logstash.logback:logstash-logback-encoder:5.3')
 	implementation('org.springframework.boot:spring-boot-starter-json')
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
+	implementation group: 'org.simplejavamail', name: 'outlook-message-parser', version: '1.7.9'
 
 	compile group: 'org.jodconverter', name: 'jodconverter-spring-boot-starter', version: '4.2.2'
 	compile group: 'org.jodconverter', name: 'jodconverter-local', version: '4.2.2'
 	compile 'org.glassfish.jaxb:jaxb-runtime:2.3.2'
     compile group: 'com.itextpdf', name: 'itextpdf', version: '5.5.13.1'
     compile group: 'com.itextpdf.tool', name: 'xmlworker', version: '5.5.13.1'
-    compile group: 'com.auxilii.msgparser', name: 'msgparser', version: '1.1.15'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
