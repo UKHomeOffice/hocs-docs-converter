@@ -1,9 +1,5 @@
 package uk.gov.digital.ho.hocs.document;
 
-import com.auxilii.msgparser.Message;
-import com.auxilii.msgparser.MsgParser;
-import com.auxilii.msgparser.attachment.Attachment;
-import com.auxilii.msgparser.attachment.FileAttachment;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.RandomAccessFileOrArray;
@@ -15,12 +11,18 @@ import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.simplejavamail.outlookmessageparser.OutlookMessageParser;
+import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
+import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.document.LogEvent.DOCUMENT_CONVERSION_INVALID_FORMAT;
@@ -75,8 +77,8 @@ public class MSGDocumentConverter {
 
     private byte[] convertMsg(InputStream inputStream) throws IOException, DocumentException {
 
-        MsgParser parser = new MsgParser();
-        Message message = parser.parseMsg(inputStream);
+        OutlookMessageParser parser = new OutlookMessageParser();
+        OutlookMessage message = parser.parseMsg(inputStream);
         MsgContents contents = extractContents(message);
 
         Document pdf = new Document();
@@ -97,7 +99,7 @@ public class MSGDocumentConverter {
             pdf.add(new Paragraph(""));
             pdf.add(new Paragraph(contents.getBodyText()));
         }
-        for (Attachment attachment : contents.getAttachments()) {
+        for (OutlookAttachment attachment : contents.getAttachments()) {
             processAttachment(pdf, attachment);
         }
         pdf.close();
@@ -107,21 +109,35 @@ public class MSGDocumentConverter {
         return outputBytes;
     }
 
-    private MsgContents extractContents(Message message) throws DocumentException {
+    public MsgContents extractContents(OutlookMessage message) throws DocumentException {
         if (message == null) {
             throw new DocumentException("Invalid MSG Contents");
         }
         MsgContents contents = new MsgContents();
         contents.setFromEmail(StringUtils.defaultString(message.getFromEmail(), StringUtils.EMPTY));
         contents.setFromName(StringUtils.defaultString(message.getFromName(), StringUtils.EMPTY));
-        contents.setToEmail(StringUtils.defaultString(message.getToEmail(), StringUtils.EMPTY));
-        contents.setToName(StringUtils.defaultString(message.getToName(), StringUtils.EMPTY));
+
+        if (!message.getToRecipients().isEmpty()) {
+            if (message.getToRecipients().get(0).getAddress() != null) {
+                contents.setToEmail(StringUtils
+                        .defaultString(message.getToRecipients().get(0).getAddress(), StringUtils.EMPTY));
+            }
+            if (message.getToRecipients().get(0).getName() != null) {
+                contents.setToName(StringUtils
+                        .defaultString(message.getToRecipients().get(0).getName(), StringUtils.EMPTY));
+            }
+        }
+
         contents.setBodyText(StringUtils.defaultString(message.getBodyText(), StringUtils.EMPTY));
         contents.setSubject(StringUtils.defaultString(message.getSubject(), StringUtils.EMPTY));
         contents.setBodyHTML(StringUtils.defaultString(message.getConvertedBodyHTML(), StringUtils.EMPTY));
-        contents.setSentOn(StringUtils.defaultString(String.valueOf(Message.getDateFromHeaders(message.getHeaders())), StringUtils.EMPTY));
-        if (message.getAttachments() != null) {
-            contents.setAttachments(message.getAttachments());
+
+        var zonedDateTime = message.getDate().toInstant().atZone(ZoneId.of("Europe/London"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy");
+        contents.setSentOn(zonedDateTime.format(formatter));
+
+        if (message.getOutlookAttachments() != null) {
+            contents.setAttachments(message.getOutlookAttachments());
         }
         return contents;
     }
@@ -133,6 +149,11 @@ public class MSGDocumentConverter {
         try {
             ElementList elements = XMLWorkerHelper.parseToElementList(contents.getBodyHTML(), null);
             document.add(new Paragraph(""));
+
+            if (elements.isEmpty()) {
+                return false;
+            }
+
             for (Element element : elements) {
                 document.add(element);
             }
@@ -142,12 +163,12 @@ public class MSGDocumentConverter {
         return true;
     }
 
-    private void processAttachment(Document pdf, Attachment attachment) {
+    private void processAttachment(Document pdf, OutlookAttachment attachment) {
         // we don't process messages containing messages
-        if (!(attachment instanceof FileAttachment)) {
+        if (!(attachment instanceof OutlookFileAttachment)) {
             return;
         }
-        FileAttachment fileAttachment = (FileAttachment)attachment;
+        OutlookFileAttachment fileAttachment = (OutlookFileAttachment)attachment;
         try {
             String fileExtension = StringUtils.remove(fileAttachment.getExtension(),".");
             if (TIF_EXT.equalsIgnoreCase(fileExtension) || TIFF_EXT.equalsIgnoreCase(fileExtension)) {
@@ -168,7 +189,7 @@ public class MSGDocumentConverter {
         }
     }
 
-    private void addTiffToPdf(Document pdf, FileAttachment attachment) throws DocumentException {
+    private void addTiffToPdf(Document pdf, OutlookFileAttachment attachment) throws DocumentException {
 
         byte[] data = attachment.getData();
         RandomAccessFileOrArray tiffFile = new RandomAccessFileOrArray(data);
@@ -183,7 +204,7 @@ public class MSGDocumentConverter {
         }
     }
 
-    private void addJpegToPdf(Document pdf, FileAttachment attachment) throws IOException, DocumentException {
+    private void addJpegToPdf(Document pdf, OutlookFileAttachment attachment) throws IOException, DocumentException {
 
         byte[] data = attachment.getData();
         Image image = new Jpeg(data);
@@ -195,7 +216,7 @@ public class MSGDocumentConverter {
 
     }
 
-    private void addPngToPdf(Document pdf, FileAttachment attachment) throws IOException, DocumentException {
+    private void addPngToPdf(Document pdf, OutlookFileAttachment attachment) throws IOException, DocumentException {
 
         byte[] data = attachment.getData();
         Image image = PngImage.getImage(data);
@@ -207,7 +228,7 @@ public class MSGDocumentConverter {
 
     }
 
-    private void addGifToPdf(Document pdf, FileAttachment attachment) throws IOException, DocumentException {
+    private void addGifToPdf(Document pdf, OutlookFileAttachment attachment) throws IOException, DocumentException {
 
         byte[] data = attachment.getData();
         GifImage gif = new GifImage(data);
