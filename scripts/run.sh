@@ -3,4 +3,4 @@
 NAME=${NAME:-docs}
 
 JAR=$(find . -name ${NAME}*.jar|head -1)
-/usr/local/java/bin/java ${JAVA_OPTS} -Dcom.sun.management.jmxremote.local.only=false -Djava.security.egd=file:/dev/./urandom -jar "${JAR}"
+exec /usr/local/java/bin/java ${JAVA_OPTS} -Dcom.sun.management.jmxremote.local.only=false -Djava.security.egd=file:/dev/./urandom -jar "${JAR}"
