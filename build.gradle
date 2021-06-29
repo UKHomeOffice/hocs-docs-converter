@@ -34,6 +34,7 @@ dependencies {
 	implementation('org.glassfish.jaxb:jaxb-runtime:2.3.2')
 	implementation('com.itextpdf:itextpdf:5.5.13.1')
 	implementation('com.itextpdf.tool:xmlworker:5.5.13.1')
+	implementation('junit:junit:4.13.1')
 
 	compileOnly('org.projectlombok:lombok')
 	annotationProcessor('org.projectlombok:lombok')
