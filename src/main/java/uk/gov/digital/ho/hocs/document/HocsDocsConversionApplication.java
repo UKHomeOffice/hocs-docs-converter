@@ -16,7 +16,7 @@ public class HocsDocsConversionApplication {
 
 	@PreDestroy
 	public void stop() {
-		log.info("hocs-docs-converter stopping gracefully");
+		log.info("Stopping gracefully");
 	}
 
 }
