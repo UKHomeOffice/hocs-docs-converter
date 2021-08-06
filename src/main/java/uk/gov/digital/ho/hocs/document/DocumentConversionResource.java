@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.document;
 import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.jodconverter.DocumentConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
@@ -26,93 +27,97 @@ import static uk.gov.digital.ho.hocs.document.LogEvent.*;
 @Slf4j
 public class DocumentConversionResource {
 
-    private final DocumentConverter converter;
+    private final DocumentConverter jodConverter;
     private final ExtendedDocumentConverter extendedDocumentConverter;
     private final MSGDocumentConverter msgDocumentConverter;
 
     private static final DocumentFormat outputFormat = DefaultDocumentFormatRegistry.PDF;
 
     @Autowired
-    public DocumentConversionResource(DocumentConverter converter, ExtendedDocumentConverter extendedDocumentConverter,
+    public DocumentConversionResource(DocumentConverter jodConverter, ExtendedDocumentConverter extendedDocumentConverter,
                                       MSGDocumentConverter msgDocumentConverter) {
-        this.converter = converter;
+        this.jodConverter = jodConverter;
         this.extendedDocumentConverter = extendedDocumentConverter;
         this.msgDocumentConverter = msgDocumentConverter;
     }
 
     // method to convert file
     @PostMapping("/convert")
-    public void convert(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
+    public void buildResponse(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
 
-        String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
-        if (fileExtension == null) {
-            log.info("Cannot convert document {}, file has no extension", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.flushBuffer();
-            return;
-        }
-
-        if (extendedDocumentConverter.isSupported(fileExtension)) {
-            InputStream byteStream = new ByteArrayInputStream(file.getBytes());
-            try {
-                final byte[] convertedBytes = extendedDocumentConverter.convertToPdf(fileExtension, byteStream);
-                response.getOutputStream().write(convertedBytes);
-                response.setStatus(HttpStatus.OK.value());
-                response.flushBuffer();
-                byteStream.close();
-                return;
-            } catch (DocumentException e) {
-                log.info("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+        try {
+            String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
+            if (fileExtension == null) {
+                log.info("Cannot convert document {}, file has no extension. Event {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 response.flushBuffer();
-                byteStream.close();
                 return;
             }
-        }
-        if (msgDocumentConverter.isSupported(fileExtension)) {
-            InputStream byteStream = new ByteArrayInputStream(file.getBytes());
-            try {
-                final byte[] convertedBytes = msgDocumentConverter.convertToPdf(fileExtension, byteStream);
-                response.getOutputStream().write(convertedBytes);
-                response.setStatus(HttpStatus.OK.value());
-                response.flushBuffer();
-                byteStream.close();
-                return;
-            } catch (DocumentException e) {
-                log.info("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+
+            if (extendedDocumentConverter.isSupported(fileExtension)) {
+                InputStream byteStream = new ByteArrayInputStream(file.getBytes());
+                try {
+                    buildResponse(file, response, byteStream, extendedDocumentConverter.convertToPdf(fileExtension, byteStream));
+                    return;
+                } catch (DocumentException e) {
+                    log.info("Cannot convert document {}, unsupported file format. Event {}. Exception {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT), value(EXCEPTION, e.toString()));
+                    response.setStatus(HttpStatus.BAD_REQUEST.value());
+                    response.flushBuffer();
+                    byteStream.close();
+                    return;
+                }
+            }
+            if (msgDocumentConverter.isSupported(fileExtension)) {
+                InputStream byteStream = new ByteArrayInputStream(file.getBytes());
+                try {
+                    buildResponse(file, response, byteStream, msgDocumentConverter.convertToPdf(fileExtension, byteStream));
+                } catch (DocumentException | NotOLE2FileException e) {
+                    log.info("Cannot convert document {}, unsupported file format. Event {}. Exception {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT), value(EXCEPTION, e.toString()));
+                    response.setStatus(HttpStatus.BAD_REQUEST.value());
+                    response.flushBuffer();
+                    byteStream.close();
+                    return;
+                }
+            }
+            DocumentFormat format = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
+            if (format == null) {
+                log.info("Cannot convert document {}, unsupported file format. Event {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
                 response.flushBuffer();
-                byteStream.close();
                 return;
             }
-        }
-        DocumentFormat format = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
-        if (format == null) {
-            log.info("Cannot convert document {}, unsupported file format", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.flushBuffer();
-            return;
-        }
 
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            converter
-                    .convert(file.getInputStream(), true)
-                    .as(format)
-                    .to(baos)
-                    .as(outputFormat)
-                    .execute();
-
-            setResponseHeaders(file.getOriginalFilename(), response);
-            baos.writeTo(response.getOutputStream());
-            response.setStatus(HttpStatus.OK.value());
-            log.info("Document Conversion complete for {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
-            response.flushBuffer();
-
-        } catch (OfficeException | IOException e) {
-            log.error("Error converting document {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_FAILURE), value(EXCEPTION, e.toString()));
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                jodConverter
+                        .convert(file.getInputStream(), true)
+                        .as(format)
+                        .to(baos)
+                        .as(outputFormat)
+                        .execute();
+    
+                setResponseHeaders(file.getOriginalFilename(), response);
+                baos.writeTo(response.getOutputStream());
+                response.setStatus(HttpStatus.OK.value());
+                log.info("Document Conversion complete for {}. Event {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
+                response.flushBuffer();
+    
+            } catch (OfficeException e) {
+                log.error("Error converting document {}. Event {}. Exception {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_FAILURE), value(EXCEPTION, e.toString()));
+                response.setStatus(HttpStatus.BAD_REQUEST.value());
+            }
+        } catch (Exception e) {
+            log.error("Error converting document {}. Event {}. Exception {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_FAILURE), value(EXCEPTION, e.toString()));
+            throw e;
         }
 
+    }
+
+    private void buildResponse(MultipartFile file, HttpServletResponse response, InputStream byteStream, byte[] bytes) throws IOException {
+        response.getOutputStream().write(bytes);
+        response.setStatus(HttpStatus.OK.value());
+        log.info("Document Conversion complete for {}. Event {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
+        response.flushBuffer();
+        byteStream.close();
     }
 
     private static void setResponseHeaders(String filename, HttpServletResponse response) {
