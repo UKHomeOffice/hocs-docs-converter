@@ -43,7 +43,7 @@ public class DocumentConversionResource {
 
     // method to convert file
     @PostMapping("/convert")
-    public void buildResponse(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
+    public void convert(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
 
         try {
             String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
