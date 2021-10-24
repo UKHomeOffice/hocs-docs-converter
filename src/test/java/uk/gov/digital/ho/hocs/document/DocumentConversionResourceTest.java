@@ -309,7 +309,8 @@ public class DocumentConversionResourceTest {
         FileInputStream inputStream = new FileInputStream(tif.getFile());
         final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("tif", inputStream);
         inputStream.close();
-        assertEquals(2511535, convertedBytes.length);
+        final byte[] pdfBytes = IOUtils.toByteArray(new FileInputStream(tifPdf.getFile()));
+        assertEquals(pdfBytes.length, convertedBytes.length);
     }
 
     @Test
