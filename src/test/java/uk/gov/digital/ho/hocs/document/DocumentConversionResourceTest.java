@@ -225,7 +225,7 @@ public class DocumentConversionResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(tifPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length);
+        assertEquals(bytes.length, response.getBody().length, 100);
     }
 
     @Test
@@ -244,7 +244,7 @@ public class DocumentConversionResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(gifPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length);
+        assertEquals(bytes.length, response.getBody().length, 100);
     }
 
     @Test
@@ -263,7 +263,7 @@ public class DocumentConversionResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(jpgPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length);
+        assertEquals(bytes.length, response.getBody().length, 100);
     }
 
     @Test
@@ -282,7 +282,7 @@ public class DocumentConversionResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(pngPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length);
+        assertEquals(bytes.length, response.getBody().length, 100);
     }
 
     @Test
@@ -310,7 +310,7 @@ public class DocumentConversionResourceTest {
         final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("tif", inputStream);
         inputStream.close();
         final byte[] pdfBytes = IOUtils.toByteArray(new FileInputStream(tifPdf.getFile()));
-        assertEquals(pdfBytes.length, convertedBytes.length);
+        assertEquals(pdfBytes.length, convertedBytes.length, 100);
     }
 
     @Test
