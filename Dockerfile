@@ -1,23 +1,19 @@
-FROM quay.io/ukhomeofficedigital/hocs-libreoffice
-ENV TZ Europe/London
-ENV LANGUAGE en_GB.UTF-8
-ENV LANG en_GB.UTF-8
-ENV LC_ALL en_GB.UTF-8
+FROM quay.io/ukhomeofficedigital/alpine:v3.14
 
-ENV USER user_hocs_docs
+ENV USER user_hocs_docs_converter
 ENV USER_ID 1000
-ENV GROUP group_hocs_docs
+ENV GROUP group_hocs_docs_converter
 ENV NAME hocs-docs-converter
 ENV JAR_PATH build/libs
 
-RUN yum update -y glibc && \
-    yum update -y nss && \
-    yum update -y bind-license
+USER root
+
+RUN apk add libreoffice
 
 WORKDIR /app
 
-RUN groupadd -r ${GROUP} && \
-    useradd -r -u ${USER_ID} -g ${GROUP} ${USER} -d /app && \
+RUN addgroup -S ${GROUP} && \
+    adduser -S -u ${USER_ID} ${USER} -G ${GROUP} -h /app && \
     mkdir -p /app && \
     chown -R ${USER}:${GROUP} /app
 
@@ -31,4 +27,5 @@ EXPOSE 8080
 
 USER ${USER_ID}
 
-CMD /app/scripts/run.sh
+CMD ["sh", "/app/scripts/run.sh"]
+
