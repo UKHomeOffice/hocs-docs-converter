@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/alpine:v3.14
+FROM quay.io/ukhomeofficedigital/hocs-libreoffice
 
 ENV USER user_hocs_docs_converter
 ENV USER_ID 1000
@@ -8,7 +8,7 @@ ENV JAR_PATH build/libs
 
 USER root
 
-RUN apk add libreoffice
+RUN apk add openjdk11-jre
 
 WORKDIR /app
 
