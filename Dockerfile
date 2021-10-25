@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/hocs-libreoffice
+FROM quay.io/ukhomeofficedigital/hocs-libreoffice:branch-nm_alpine_libreoffice
 
 ENV USER user_hocs_docs_converter
 ENV USER_ID 1000
