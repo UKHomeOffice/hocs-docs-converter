@@ -28,4 +28,3 @@ EXPOSE 8080
 USER ${USER_ID}
 
 CMD ["sh", "/app/scripts/run.sh"]
-
