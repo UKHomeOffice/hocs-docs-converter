@@ -1,4 +1,5 @@
-FROM quay.io/ukhomeofficedigital/alpine:v3.14 #TODO: Remove
+#TODO: Remove
+FROM quay.io/ukhomeofficedigital/alpine:v3.14
 #FROM quay.io/ukhomeofficedigital/hocs-libreoffice:branch-nm_alpine_libreoffice
 
 ENV USER user_hocs_docs_converter
