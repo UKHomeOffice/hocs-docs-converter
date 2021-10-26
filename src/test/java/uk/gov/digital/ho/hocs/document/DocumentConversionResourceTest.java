@@ -3,8 +3,8 @@ package uk.gov.digital.ho.hocs.document;
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +12,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -20,14 +19,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 public class DocumentConversionResourceTest {
 
     @Value("classpath:testdata/sample.docx")
@@ -227,7 +228,7 @@ public class DocumentConversionResourceTest {
         assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(tifPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length, 100);
+        assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length, 100);
     }
 
     @Test
@@ -246,7 +247,7 @@ public class DocumentConversionResourceTest {
         assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(gifPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length, 100);
+        assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length, 100);
     }
 
     @Test
@@ -265,7 +266,7 @@ public class DocumentConversionResourceTest {
         assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(jpgPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length, 100);
+        assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length, 100);
     }
 
     @Test
@@ -284,7 +285,7 @@ public class DocumentConversionResourceTest {
         assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(pngPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length, 100);
+        assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length, 100);
     }
 
     @Test

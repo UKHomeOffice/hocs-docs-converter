@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.document;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.io.RandomAccessSourceFactory;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.RandomAccessFileOrArray;
 import com.itextpdf.text.pdf.codec.GifImage;
@@ -184,15 +185,14 @@ public class MSGDocumentConverter {
                 addGifToPdf(pdf, fileAttachment);
             }
         } catch (Exception e) {
-            log.info("Cannot convert attachment {} with error: {}", fileAttachment.getFilename(), e.getMessage(),
-                     value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
+            log.info(String.format("Cannot convert attachment %s with error: %s" , fileAttachment.getFilename(), e.getMessage()), value(EVENT, DOCUMENT_CONVERSION_INVALID_FORMAT));
         }
     }
 
     private void addTiffToPdf(Document pdf, OutlookFileAttachment attachment) throws DocumentException {
 
         byte[] data = attachment.getData();
-        RandomAccessFileOrArray tiffFile = new RandomAccessFileOrArray(data);
+        RandomAccessFileOrArray tiffFile = new RandomAccessFileOrArray(new RandomAccessSourceFactory().createSource(data));
         int numberOfPages = TiffImage.getNumberOfPages(tiffFile);
 
         for (int i = 1 ; i <= numberOfPages ; i++) {

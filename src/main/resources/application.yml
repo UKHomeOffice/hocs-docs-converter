@@ -13,8 +13,6 @@ server:
 spring:
   main:
     banner-mode: off
-  lifecycle:
-    timeout-per-shutdown-phase: 10s
   servlet:
     multipart:
       enabled: true

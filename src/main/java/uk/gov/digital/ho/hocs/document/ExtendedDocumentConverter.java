@@ -4,6 +4,7 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Jpeg;
+import com.itextpdf.text.io.RandomAccessSourceFactory;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.RandomAccessFileOrArray;
 import com.itextpdf.text.pdf.codec.GifImage;
@@ -89,8 +90,8 @@ public class ExtendedDocumentConverter {
 
     private byte[] convertTiff(InputStream inputStream) throws IOException, DocumentException {
 
-        byte[] fileBytes = IOUtils.toByteArray(inputStream);
-        RandomAccessFileOrArray tiffFile = new RandomAccessFileOrArray(fileBytes);
+        byte[] data = IOUtils.toByteArray(inputStream);
+        RandomAccessFileOrArray tiffFile = new RandomAccessFileOrArray(new RandomAccessSourceFactory().createSource(data));
         int numberOfPages = TiffImage.getNumberOfPages(tiffFile);
 
         Document pdf = new Document();

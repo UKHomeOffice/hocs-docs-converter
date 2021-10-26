@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.document;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,18 +9,18 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 public class MSGConversionResourceTest {
 
     @Value("classpath:testdata/sample1.msg")
@@ -51,7 +51,7 @@ public class MSGConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -68,7 +68,7 @@ public class MSGConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -85,7 +85,7 @@ public class MSGConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 

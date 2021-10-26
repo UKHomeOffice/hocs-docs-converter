@@ -1,4 +1,5 @@
-FROM quay.io/ukhomeofficedigital/hocs-libreoffice:branch-nm_alpine_libreoffice
+FROM quay.io/ukhomeofficedigital/alpine:v3.14 #TODO: Remove
+#FROM quay.io/ukhomeofficedigital/hocs-libreoffice:branch-nm_alpine_libreoffice
 
 ENV USER user_hocs_docs_converter
 ENV USER_ID 1000
@@ -8,6 +9,9 @@ ENV JAR_PATH build/libs
 
 USER root
 
+RUN apk add libreoffice #TODO: Remove
+RUN apk add --no-cache msttcorefonts-installer fontconfig #TODO: Remove
+RUN update-ms-fonts #TODO: Remove
 RUN apk add openjdk11-jre
 
 WORKDIR /app

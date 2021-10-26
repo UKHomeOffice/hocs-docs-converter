@@ -36,10 +36,13 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.5.6'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
-	testImplementation 'junit:junit:4.13.2'
 
 }
 
 jar {
 	enabled = false
+}
+
+test {
+	useJUnitPlatform()
 }
