@@ -21,6 +21,12 @@ spring:
       file-size-threshold: 20MB
       location: ${java.io.tmpdir}
 
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
 jodconverter:
   local:
     enabled: true

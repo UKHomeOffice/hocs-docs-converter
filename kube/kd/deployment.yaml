@@ -167,26 +167,38 @@ spec:
               containerPort: 8080
           startupProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/liveness
               port: http
               httpHeaders:
                 - name: X-probe
                   value: kubelet
               initialDelaySeconds: 20
-              periodSeconds: 10
-              failureThreshold: 3
+              periodSeconds: 5
+              failureThreshold: 6
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/liveness
               port: http
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            periodSeconds: 5
+            periodSeconds: 2
+          readinessprobe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+              httpHeaders:
+                - name: X-probe
+                  value: kubelet
+            periodSeconds: 2
           volumeMounts:
             - mountPath: /etc/keystore
               name: keystore
               readOnly: true
+  lifecycle:
+    preStop:
+      exec:
+        command: [ "sh", "-c", "sleep 20" ]
       volumes:
         - name: keystore
           emptyDir:
