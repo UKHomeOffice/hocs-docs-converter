@@ -8,7 +8,7 @@ ENV JAR_PATH build/libs
 
 USER root
 
-RUN apk add openjdk11-jre
+RUN apk add --no-cache openjdk11-jre
 
 WORKDIR /app
 

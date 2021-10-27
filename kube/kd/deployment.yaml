@@ -57,9 +57,9 @@ spec:
           resources:
             limits:
               memory: 100Mi
-              cpu: 200m
+              cpu: 500m
             requests:
-              memory: 50Mi
+              memory: 100Mi
               cpu: 100m
       containers:
         - name: certs
@@ -91,9 +91,8 @@ spec:
               memory: 100Mi
               cpu: 200m
             requests:
-              memory: 50Mi
+              memory: 100Mi
               cpu: 100m
-
         - name: proxy
           image: quay.io/ukhomeofficedigital/nginx-proxy:v4.2.0
           securityContext:
@@ -136,9 +135,9 @@ spec:
           resources:
             limits:
               memory: 100Mi
-              cpu: 200m
+              cpu: 400m
             requests:
-              memory: 50Mi
+              memory: 100Mi
               cpu: 100m
 
         - name: hocs-docs-converter
@@ -151,18 +150,18 @@ spec:
                 - SETGID
           env:
             - name: JAVA_OPTS
-              value: '-Xms512m -Xmx1536m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
+              value: '-Xms384m -Xmx1024m -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: JDK_TRUST_FILE
               value: '/etc/keystore/truststore.jks'
             - name: SERVER_PORT
               value: '8080'
           resources:
             limits:
-              cpu: 550m
-              memory: 2048Mi
+              cpu: 1600m
+              memory: 1536Mi
             requests:
               cpu: 350m
-              memory: 512Mi
+              memory: 1536Mi
           ports:
             - name: http
               containerPort: 8080
@@ -173,7 +172,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-              initialDelaySeconds: 15
+              initialDelaySeconds: 20
               periodSeconds: 10
               failureThreshold: 3
           livenessProbe:
