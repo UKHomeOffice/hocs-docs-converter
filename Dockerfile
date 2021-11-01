@@ -17,6 +17,14 @@ RUN addgroup -S ${GROUP} && \
     mkdir -p /app && \
     chown -R ${USER}:${GROUP} /app
 
+COPY ${JAR_PATH}/${NAME}*.jar /app
+
+ADD scripts /app/scripts
+
+RUN chmod a+x /app/scripts/*
+
+EXPOSE 8080
+
 USER ${USER_ID}
 
 CMD ["sh", "/app/scripts/run.sh"]
