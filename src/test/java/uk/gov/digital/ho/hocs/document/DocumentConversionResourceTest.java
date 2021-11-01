@@ -3,8 +3,8 @@ package uk.gov.digital.ho.hocs.document;
 import com.itextpdf.text.DocumentException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +12,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -21,11 +20,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 public class DocumentConversionResourceTest {
 
     @Value("classpath:testdata/sample.docx")
@@ -87,8 +89,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -104,8 +105,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -121,8 +121,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -138,8 +137,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -155,7 +153,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -171,8 +169,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -188,8 +185,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -205,8 +201,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -222,7 +217,7 @@ public class DocumentConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(tifPdf.getFile()));
         assertEquals(bytes.length, response.getBody().length);
@@ -241,7 +236,7 @@ public class DocumentConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(gifPdf.getFile()));
         assertEquals(bytes.length, response.getBody().length);
@@ -260,7 +255,7 @@ public class DocumentConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(jpgPdf.getFile()));
         assertEquals(bytes.length, response.getBody().length);
@@ -279,7 +274,7 @@ public class DocumentConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(pngPdf.getFile()));
         assertEquals(bytes.length, response.getBody().length);
@@ -298,7 +293,7 @@ public class DocumentConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(converted.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(converted.getStatusCode(), HttpStatus.OK);
 
         final byte[] originalBytes = FileUtils.readFileToByteArray(pdf.getFile());
         assertArrayEquals(originalBytes, converted.getBody());

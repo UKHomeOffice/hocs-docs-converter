@@ -2,21 +2,21 @@ package uk.gov.digital.ho.hocs.document;
 
 
 import com.itextpdf.text.DocumentException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.simplejavamail.outlookmessageparser.OutlookMessageParser;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 public class MSGDocumentConverterTest {
 
     @Autowired
@@ -33,15 +33,15 @@ public class MSGDocumentConverterTest {
 
         MsgContents result = msgDocumentConverter.extractContents(message);
 
-        assertThat(result.getSentOn()).isEqualTo("Sat Aug 12 19:25:25 BST 2006");
-        assertThat(result.getBodyHTML().length()).isEqualTo(142);
-        assertThat(result.getBodyText().length()).isEqualTo(150);
-        assertThat(result.getFromName()).isEqualTo("John Doe");
-        assertThat(result.getToEmail()).isEqualTo("testadd@example.org");
-        assertThat(result.getToName()).isEqualTo("testadd@example.org");
+        assertEquals(result.getSentOn(), "Sat Aug 12 19:25:25 BST 2006");
+        assertEquals(result.getBodyHTML().length(), 142);
+        assertEquals(result.getBodyText().length(), 150);
+        assertEquals(result.getFromName(), "John Doe");
+        assertEquals(result.getToEmail(), "testadd@example.org");
+        assertEquals(result.getToName(), "testadd@example.org");
         // this email subject is long because it has been inserted into an existing sample .msg file. Changing the
         // length breaks the checksum
-        assertThat(result.getSubject()).isEqualTo("Email Subject Email Subject Email Subject Email Subject Email Subj.");
+        assertEquals(result.getSubject(), "Email Subject Email Subject Email Subject Email Subject Email Subj.");
 
     }
 }
