@@ -5,12 +5,12 @@ name: build
 
 steps:
   - name: build project
-    image: quay.io/ukhomeofficedigital/hocs-libreoffice
+    image: quay.io/ukhomeofficedigital/hocs-libreoffice:latest
     commands:
       - ./gradlew assemble --no-daemon
 
   - name: test project
-    image: quay.io/ukhomeofficedigital/hocs-libreoffice
+    image: quay.io/ukhomeofficedigital/hocs-libreoffice:latest
     commands:
       - ./gradlew check --no-daemon
     depends_on:
