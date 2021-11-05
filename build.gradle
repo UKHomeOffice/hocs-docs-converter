@@ -36,11 +36,12 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
 
-	testImplementation 'org.assertj:assertj-core'
-	testImplementation 'junit:junit:4.13.1'
-
 }
 
 jar {
 	enabled = false
+}
+
+test {
+	useJUnitPlatform()
 }
