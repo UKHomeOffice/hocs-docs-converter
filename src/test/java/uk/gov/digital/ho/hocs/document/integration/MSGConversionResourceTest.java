@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.document;
+package uk.gov.digital.ho.hocs.document.integration;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -14,9 +14,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -35,8 +33,6 @@ public class MSGConversionResourceTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private MsgDocumentConverter msgDocumentConverter;
 
     @Test
     public void testMsg1_Ok() throws IOException {
@@ -51,7 +47,7 @@ public class MSGConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(),HttpStatus.OK);
 
     }
 
@@ -68,7 +64,7 @@ public class MSGConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(),HttpStatus.OK);
 
     }
 
@@ -85,25 +81,8 @@ public class MSGConversionResourceTest {
                                                                 new HttpEntity<>(map, headers),
                                                                 byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(),HttpStatus.OK);
 
-    }
-
-
-    @Test
-    public void checkExtendedSupport() {
-        assertTrue(msgDocumentConverter.isSupported("msg"));
-
-        assertFalse(msgDocumentConverter.isSupported("jpg"));
-        assertFalse(msgDocumentConverter.isSupported("png"));
-        assertFalse(msgDocumentConverter.isSupported("tif"));
-        assertFalse(msgDocumentConverter.isSupported("gif"));
-        assertFalse(msgDocumentConverter.isSupported("jpeg"));
-        assertFalse(msgDocumentConverter.isSupported("tiff"));
-        assertFalse(msgDocumentConverter.isSupported("doc"));
-        assertFalse(msgDocumentConverter.isSupported("rtf"));
-        assertFalse(msgDocumentConverter.isSupported("txt"));
-        assertFalse(msgDocumentConverter.isSupported("docx"));
     }
 
 }

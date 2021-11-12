@@ -1,8 +1,5 @@
-package uk.gov.digital.ho.hocs.document;
+package uk.gov.digital.ho.hocs.document.integration;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -17,22 +14,17 @@ import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class DocumentConversionResourceTest {
+public class DocumentConversionControllerTest {
 
     @Value("classpath:testdata/sample.docx")
     private Resource docx;
@@ -77,8 +69,6 @@ public class DocumentConversionResourceTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ImageDocumentConverter imageDocumentConverter;
 
     @Test
     public void shouldReturn200ForValidFileUpload() throws IOException {
@@ -289,83 +279,5 @@ public class DocumentConversionResourceTest {
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(pngPdf.getFile()));
         assertEquals(bytes.length, response.getBody().length);
-    }
-
-    @Test
-    public void testOkExtDocConverterPdfAndContents() throws IOException {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-        map.set("file", new FileSystemResource(pdf.getFile()));
-
-        ResponseEntity<byte[]> converted = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
-
-        assertThat(converted.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        final byte[] originalBytes = FileUtils.readFileToByteArray(pdf.getFile());
-        assertArrayEquals(originalBytes, converted.getBody());
-    }
-
-    @Test
-    public void textExtendedDocumentConverterTiffDirectly() throws IOException, DocumentException {
-        FileInputStream inputStream = new FileInputStream(tif.getFile());
-
-        Document pdf = new Document();
-        final ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
-        PdfWriter.getInstance(pdf, arrayOutputStream);
-        pdf.open();
-
-        imageDocumentConverter.convertToPdf(pdf,"tif", inputStream);
-
-        pdf.close();
-        inputStream.close();
-        //assertEquals(2511535, convertedBytes);
-    }
-
-    @Test
-    public void checkExtendedSupport() {
-        assertTrue(imageDocumentConverter.isSupported("jpg"));
-        assertTrue(imageDocumentConverter.isSupported("png"));
-        assertTrue(imageDocumentConverter.isSupported("tif"));
-        assertTrue(imageDocumentConverter.isSupported("gif"));
-        assertTrue(imageDocumentConverter.isSupported("jpeg"));
-        assertTrue(imageDocumentConverter.isSupported("tiff"));
-
-        assertFalse(imageDocumentConverter.isSupported("doc"));
-        assertFalse(imageDocumentConverter.isSupported("rtf"));
-        assertFalse(imageDocumentConverter.isSupported("txt"));
-        assertFalse(imageDocumentConverter.isSupported("docx"));
-    }
-
-    @Test
-    public void createFiles() throws IOException, DocumentException {
-        createFile("gif", gif.getFile());
-        createFile("tif", tif.getFile());
-        createFile("png", png.getFile());
-        createFile("jpg", jpg.getFile());
-    }
-
-    private void createFile(String ext, File file) throws IOException, DocumentException {
-        FileInputStream inputStream = new FileInputStream(file);
-
-        Document pdf = new Document();
-        final ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
-        PdfWriter.getInstance(pdf, arrayOutputStream);
-        pdf.open();
-
-        imageDocumentConverter.convertToPdf(pdf, ext, inputStream);
-
-        pdf.close();
-
-        inputStream.close();
-
-        FileOutputStream fos = new FileOutputStream("sample." + ext + ".pdf");
-        fos.write(arrayOutputStream.toByteArray());
-        fos.flush();
-        fos.close();
     }
 }

@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.document;
+package uk.gov.digital.ho.hocs.document.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.digital.ho.hocs.document.service.DocumentConversionService;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,10 +15,10 @@ import java.io.IOException;
 
 @RestController
 @Slf4j
-public class DocumentConversionResource {
+public class DocumentConversionController {
 
     @Autowired
-    DocumentConversionResource(DocumentConversionService documentConversionService) {
+    DocumentConversionController(DocumentConversionService documentConversionService) {
         this.documentConversionService = documentConversionService;
     }
 

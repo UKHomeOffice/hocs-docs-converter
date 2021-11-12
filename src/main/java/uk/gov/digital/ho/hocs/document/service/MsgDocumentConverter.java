@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.document;
+package uk.gov.digital.ho.hocs.document.service;
 
 import com.itextpdf.text.*;
 import com.itextpdf.tool.xml.ElementList;
@@ -9,8 +9,7 @@ import org.simplejavamail.outlookmessageparser.OutlookMessageParser;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.hocs.document.domain.MsgContents;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,29 +17,15 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+class MsgDocumentConverter {
 
-/**
- * This class uses the same process as in ExtendedDocumentConverter, ie iTextPdf, for converting MSG files,
- * with the added difference of the Msg Parser and iTextPdf Tool components.
- **/
-
-@Component
-public class MsgDocumentConverter {
-
-
-    @Autowired
-    public MsgDocumentConverter(ImageDocumentConverter imageDocumentConverter) {
-        this.imageDocumentConverter = imageDocumentConverter;
-    }
-
-    ImageDocumentConverter imageDocumentConverter;
+    ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
 
     private static final String MSG_EXT = "msg";
 
     private static final String[] SUPPORTED_EXTENSIONS = { MSG_EXT };
 
-
-    boolean isSupported(String fileExtension) {
+    public boolean isSupported(String fileExtension) {
         if (StringUtils.isEmpty(fileExtension)) {
             return false;
         }
@@ -53,42 +38,29 @@ public class MsgDocumentConverter {
         return false;
     }
 
-    Document convertToPdf(Document pdf, String ext, InputStream inputStream) throws IOException, DocumentException {
-        if (MSG_EXT.equalsIgnoreCase(ext)) {
-            return convertMsg(pdf, inputStream);
-        }
-        throw new DocumentException("Unsupported format for conversion");
-    }
-
-
-    private Document convertMsg(Document pdf, InputStream inputStream) throws IOException, DocumentException {
-
-        OutlookMessageParser parser = new OutlookMessageParser();
-        OutlookMessage message = parser.parseMsg(inputStream);
-        MsgContents contents = extractContents(message);
+    public void convertToPdf(Document pdf, InputStream inputStream) throws DocumentException, IOException {
+        MsgContents contents = extractContents(inputStream);
 
         pdf.newPage();
 
-        pdf.add(new Paragraph(String.format("From: %s [%s]", contents.getFromEmail(),
-                                                 StringUtils.isEmpty(contents.getFromName()) ? "N/A" : contents.getFromName())));
-        pdf.add(new Paragraph(MessageFormat.format("To: {0}", StringUtils.isEmpty(contents.getToEmail()) ?
-                                                                   contents.getToName() : contents.getToEmail())));
+        pdf.add(new Paragraph(String.format("From: %s [%s]", contents.getFromEmail(), StringUtils.isEmpty(contents.getFromName()) ? "N/A" : contents.getFromName())));
+        pdf.add(new Paragraph(MessageFormat.format("To: {0}", StringUtils.isEmpty(contents.getToEmail()) ? contents.getToName() : contents.getToEmail())));
         pdf.add(new Paragraph("Subject: " + contents.getSubject()));
-
         pdf.add(new Paragraph("Sent on: " + contents.getSentOn()));
 
         if (!parseElements(pdf, contents)) {
             pdf.add(new Paragraph(""));
             pdf.add(new Paragraph(contents.getBodyText()));
         }
+
         for (OutlookAttachment attachment : contents.getAttachments()) {
             processAttachment(pdf, attachment);
         }
-
-        return pdf;
     }
 
-    public MsgContents extractContents(OutlookMessage message) throws DocumentException {
+    public MsgContents extractContents(InputStream inputStream) throws DocumentException, IOException {
+        OutlookMessage message = new OutlookMessageParser().parseMsg(inputStream);
+
         if (message == null) {
             throw new DocumentException("Invalid MSG Contents");
         }
@@ -144,7 +116,8 @@ public class MsgDocumentConverter {
         if (!(attachment instanceof OutlookFileAttachment)) {
             return;
         }
-        OutlookFileAttachment fileAttachment = (OutlookFileAttachment)attachment;
+        OutlookFileAttachment fileAttachment = (OutlookFileAttachment) attachment;
+        // Only process attachments if they are images
         imageDocumentConverter.convertToPdf(pdf,
                 StringUtils.remove(fileAttachment.getExtension(),"."),
                 new ByteArrayInputStream(fileAttachment.getData()));
