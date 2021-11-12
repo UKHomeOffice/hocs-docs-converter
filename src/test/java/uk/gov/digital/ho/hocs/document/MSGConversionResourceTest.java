@@ -9,7 +9,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -37,7 +36,7 @@ public class MSGConversionResourceTest {
     private TestRestTemplate restTemplate;
 
     @Autowired
-    private MSGDocumentConverter msgDocumentConverter;
+    private MsgDocumentConverter msgDocumentConverter;
 
     @Test
     public void testMsg1_Ok() throws IOException {

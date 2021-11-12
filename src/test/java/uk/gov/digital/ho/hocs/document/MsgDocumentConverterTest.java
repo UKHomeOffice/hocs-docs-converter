@@ -17,10 +17,10 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class MSGDocumentConverterTest {
+public class MsgDocumentConverterTest {
 
     @Autowired
-    private MSGDocumentConverter msgDocumentConverter;
+    private MsgDocumentConverter msgDocumentConverter;
 
     @Test
     public void extractContents_sample4() throws IOException, DocumentException {
