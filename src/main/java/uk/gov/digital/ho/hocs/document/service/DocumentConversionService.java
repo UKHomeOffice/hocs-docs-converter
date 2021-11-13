@@ -31,14 +31,14 @@ import static uk.gov.digital.ho.hocs.document.application.LogEvent.EVENT;
 @Service
 public class DocumentConversionService {
 
+    private final DocumentConverter jodConverter;
+    private final ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
+    private final MsgDocumentConverter msgDocumentConverter = new MsgDocumentConverter();
+
     @Autowired
     DocumentConversionService(DocumentConverter jodConverter) {
         this.jodConverter = jodConverter;
     }
-
-    private final DocumentConverter jodConverter;
-    private final ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
-    private final MsgDocumentConverter msgDocumentConverter = new MsgDocumentConverter();
 
     public void convert(MultipartFile file, HttpServletResponse response) throws IOException {
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());

@@ -28,31 +28,31 @@ public class RestResponseEntityExceptionHandler {
 
     @ExceptionHandler(ApplicationExceptions.DocumentFormatException.class)
     public ResponseEntity handle(ApplicationExceptions.DocumentFormatException e) {
-        log.error("ApplicationExceptions.DocumentFormatException: {}", e.getMessage(),value(EVENT, e.getEvent()), value(EXCEPTION, e.getException()));
+        log.error("ApplicationExceptions.DocumentFormatException: {}", e.getMessage(), value(EVENT, e.getEvent()), value(EXCEPTION, e.getException()));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(ApplicationExceptions.DocumentConversionException.class)
     public ResponseEntity handle(ApplicationExceptions.DocumentConversionException e) {
-        log.error("ApplicationExceptions.DocumentConversionException: {}", e.getMessage(),value(EVENT, e.getEvent()), value(EXCEPTION, e.getException()));
+        log.error("ApplicationExceptions.DocumentConversionException: {}", e.getMessage(), value(EVENT, e.getEvent()), value(EXCEPTION, e.getException()));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handle(MethodArgumentNotValidException e) {
-        log.error("MethodArgumentNotValidException: {}", e.getMessage(),value(EVENT, BAD_REQUEST));
+        log.error("MethodArgumentNotValidException: {}", e.getMessage(), value(EVENT, BAD_REQUEST));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageConversionException.class)
     public ResponseEntity handle(HttpMessageConversionException e) {
-        log.error("HttpMessageConversionException: {}", e.getMessage(),value(EVENT, BAD_REQUEST));
+        log.error("HttpMessageConversionException: {}", e.getMessage(), value(EVENT, BAD_REQUEST));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity handle(HttpMessageNotReadableException e) {
-        log.error("HttpMessageNotReadableException: {}", e.getMessage(),value(EVENT, BAD_REQUEST));
+        log.error("HttpMessageNotReadableException: {}", e.getMessage(), value(EVENT, BAD_REQUEST));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 

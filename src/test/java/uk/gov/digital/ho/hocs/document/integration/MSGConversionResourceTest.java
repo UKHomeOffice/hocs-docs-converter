@@ -8,7 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -43,11 +47,11 @@ public class MSGConversionResourceTest {
         map.set("file", new FileSystemResource(msg1.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertEquals(response.getStatusCode(),HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -60,11 +64,11 @@ public class MSGConversionResourceTest {
         map.set("file", new FileSystemResource(msg2.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertEquals(response.getStatusCode(),HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -77,11 +81,11 @@ public class MSGConversionResourceTest {
         map.set("file", new FileSystemResource(msg3.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertEquals(response.getStatusCode(),HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 

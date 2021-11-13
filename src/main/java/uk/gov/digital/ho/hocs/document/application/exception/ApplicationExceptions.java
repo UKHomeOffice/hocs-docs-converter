@@ -20,7 +20,9 @@ public interface ApplicationExceptions {
             this.exception = exception;
         }
 
-        public LogEvent getException() { return  exception; }
+        public LogEvent getException() {
+            return exception;
+        }
 
         public LogEvent getEvent() {
             return event;
@@ -43,7 +45,9 @@ public interface ApplicationExceptions {
             this.exception = exception;
         }
 
-        public LogEvent getException() { return  exception; }
+        public LogEvent getException() {
+            return exception;
+        }
 
         public LogEvent getEvent() {
             return event;

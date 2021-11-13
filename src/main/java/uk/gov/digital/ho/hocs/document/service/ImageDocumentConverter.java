@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 class ImageDocumentConverter {
 
     private static final int PDF_WIDTH = 595;
@@ -28,7 +29,7 @@ class ImageDocumentConverter {
     private static final String GIF_EXT = "gif";
     private static final String PNG_EXT = "png";
 
-    private static final String[] SUPPORTED_EXTENSIONS = { TIF_EXT, TIFF_EXT, JPEG_EXT, JPG_EXT, GIF_EXT, PNG_EXT };
+    private static final String[] SUPPORTED_EXTENSIONS = {TIF_EXT, TIFF_EXT, JPEG_EXT, JPG_EXT, GIF_EXT, PNG_EXT};
 
     public void convertToPdf(Document pdf, String ext, InputStream inputStream) throws DocumentException, IOException {
 
@@ -47,7 +48,7 @@ class ImageDocumentConverter {
             images.add(img);
         }
 
-        for(Image image: images) {
+        for (Image image : images) {
             if (image == null) {
                 pdf.newPage();
             } else {
@@ -78,7 +79,7 @@ class ImageDocumentConverter {
         int numberOfPages = TiffImage.getNumberOfPages(tiffFile);
 
         List<Image> images = new ArrayList<>(numberOfPages);
-        for (int i = 1 ; i <= numberOfPages ; i++) {
+        for (int i = 1; i <= numberOfPages; i++) {
             images.add(TiffImage.getTiffImage(tiffFile, i));
         }
         return images;

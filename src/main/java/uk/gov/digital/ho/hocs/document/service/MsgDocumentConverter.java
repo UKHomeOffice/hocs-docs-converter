@@ -1,6 +1,9 @@
 package uk.gov.digital.ho.hocs.document.service;
 
-import com.itextpdf.text.*;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Paragraph;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
@@ -17,13 +20,12 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+
 class MsgDocumentConverter {
 
-    ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
-
     private static final String MSG_EXT = "msg";
-
-    private static final String[] SUPPORTED_EXTENSIONS = { MSG_EXT };
+    private static final String[] SUPPORTED_EXTENSIONS = {MSG_EXT};
+    private final ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
 
     public boolean isSupported(String fileExtension) {
         if (StringUtils.isEmpty(fileExtension)) {
@@ -119,7 +121,7 @@ class MsgDocumentConverter {
         OutlookFileAttachment fileAttachment = (OutlookFileAttachment) attachment;
         // Only process attachments if they are images
         imageDocumentConverter.convertToPdf(pdf,
-                StringUtils.remove(fileAttachment.getExtension(),"."),
+                StringUtils.remove(fileAttachment.getExtension(), "."),
                 new ByteArrayInputStream(fileAttachment.getData()));
     }
 }

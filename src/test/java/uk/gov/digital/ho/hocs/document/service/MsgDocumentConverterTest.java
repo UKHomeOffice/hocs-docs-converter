@@ -31,9 +31,18 @@ public class MsgDocumentConverterTest {
 
     private final MsgDocumentConverter msgDocumentConverter = new MsgDocumentConverter();
 
+    private static Stream<Arguments> getFiles() {
+        return Stream.of(
+                Arguments.of("src/test/resources/testdata/sample1.msg", 23660),
+                Arguments.of("src/test/resources/testdata/sample2.msg", 23660),
+                Arguments.of("src/test/resources/testdata/sample3.msg", 23659),
+                Arguments.of("src/test/resources/testdata/sample4.msg", 985)
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("getFiles")
-    public void textExtendedDocumentConverterTiffDirectly(String resourcePath, int size ) throws IOException, DocumentException {
+    public void textExtendedDocumentConverterTiffDirectly(String resourcePath, int size) throws IOException, DocumentException {
 
         Resource resource = new FileSystemResource(resourcePath);
         FileInputStream inputStream = new FileInputStream(resource.getFile());
@@ -81,24 +90,15 @@ public class MsgDocumentConverterTest {
 
         MsgContents result = msgDocumentConverter.extractContents(fileInputStream);
 
-        assertEquals(result.getSentOn(),"Sat Aug 12 19:25:25 BST 2006");
-        assertEquals(result.getBodyHTML().length(),142);
-        assertEquals(result.getBodyText().length(),150);
-        assertEquals(result.getFromName(),"John Doe");
-        assertEquals(result.getToEmail(),"testadd@example.org");
-        assertEquals(result.getToName(),"testadd@example.org");
+        assertEquals(result.getSentOn(), "Sat Aug 12 19:25:25 BST 2006");
+        assertEquals(result.getBodyHTML().length(), 142);
+        assertEquals(result.getBodyText().length(), 150);
+        assertEquals(result.getFromName(), "John Doe");
+        assertEquals(result.getToEmail(), "testadd@example.org");
+        assertEquals(result.getToName(), "testadd@example.org");
         // this email subject is long because it has been inserted into an existing sample .msg file. Changing the
         // length breaks the checksum
-        assertEquals(result.getSubject(),"Email Subject Email Subject Email Subject Email Subject Email Subj.");
+        assertEquals(result.getSubject(), "Email Subject Email Subject Email Subject Email Subject Email Subj.");
 
-    }
-
-    private static Stream<Arguments> getFiles()  {
-        return Stream.of(
-                Arguments.of("src/test/resources/testdata/sample1.msg", 23660),
-                Arguments.of("src/test/resources/testdata/sample2.msg", 23660),
-                Arguments.of("src/test/resources/testdata/sample3.msg", 23659),
-                Arguments.of("src/test/resources/testdata/sample4.msg", 985)
-        );
     }
 }

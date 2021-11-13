@@ -29,9 +29,18 @@ public class ImageDocumentConverterTest {
 
     private final ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
 
+    private static Stream<Arguments> getFiles() {
+        return Stream.of(
+                Arguments.of("src/test/resources/testdata/sample.gif", "gif", 35568),
+                Arguments.of("src/test/resources/testdata/sample.jpg", "jpg", 447932),
+                Arguments.of("src/test/resources/testdata/sample.png", "png", 183127),
+                Arguments.of("src/test/resources/testdata/sample.tif", "tif", 2511535)
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("getFiles")
-    public void textExtendedDocumentConverterTiffDirectly(String resourcePath, String extension, int size ) throws IOException, DocumentException {
+    public void textExtendedDocumentConverterTiffDirectly(String resourcePath, String extension, int size) throws IOException, DocumentException {
 
         Resource resource = new FileSystemResource(resourcePath);
         FileInputStream inputStream = new FileInputStream(resource.getFile());
@@ -71,15 +80,6 @@ public class ImageDocumentConverterTest {
         assertFalse(imageDocumentConverter.isSupported("docx"));
         assertFalse(imageDocumentConverter.isSupported("msg"));
         assertFalse(imageDocumentConverter.isSupported("pdf"));
-    }
-
-    private static Stream<Arguments> getFiles()  {
-        return Stream.of(
-                Arguments.of("src/test/resources/testdata/sample.gif", "gif", 35568),
-                Arguments.of("src/test/resources/testdata/sample.jpg", "jpg", 447932),
-                Arguments.of("src/test/resources/testdata/sample.png", "png", 183127),
-                Arguments.of("src/test/resources/testdata/sample.tif", "tif", 2511535)
-        );
     }
 
 }

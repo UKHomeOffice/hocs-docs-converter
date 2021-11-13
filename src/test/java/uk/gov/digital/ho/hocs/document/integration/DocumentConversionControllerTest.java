@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.document.integration;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -10,7 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -18,7 +21,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -214,9 +216,9 @@ public class DocumentConversionControllerTest {
         map.set("file", new FileSystemResource(tif.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -233,9 +235,9 @@ public class DocumentConversionControllerTest {
         map.set("file", new FileSystemResource(gif.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -252,9 +254,9 @@ public class DocumentConversionControllerTest {
         map.set("file", new FileSystemResource(jpg.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -271,9 +273,9 @@ public class DocumentConversionControllerTest {
         map.set("file", new FileSystemResource(png.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
