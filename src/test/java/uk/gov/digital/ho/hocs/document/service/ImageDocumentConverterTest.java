@@ -14,6 +14,7 @@ import org.springframework.core.io.Resource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.stream.Stream;
 
@@ -45,6 +46,14 @@ public class ImageDocumentConverterTest {
         pdf.close();
         inputStream.close();
         assertEquals(size, arrayOutputStream.toByteArray().length);
+
+        //Write the file to the project root so we can inspect it if we want
+        FileOutputStream fos = new FileOutputStream("sample." + extension + ".pdf");
+        fos.write(arrayOutputStream.toByteArray());
+        fos.flush();
+        fos.close();
+
+        arrayOutputStream.close();
     }
 
     @Test

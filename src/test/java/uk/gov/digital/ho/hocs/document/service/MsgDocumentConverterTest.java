@@ -16,6 +16,7 @@ import uk.gov.digital.ho.hocs.document.domain.MsgContents;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.stream.Stream;
 
@@ -47,6 +48,14 @@ public class MsgDocumentConverterTest {
         pdf.close();
         inputStream.close();
         assertEquals(size, arrayOutputStream.toByteArray().length);
+
+        //Write the file to the project root so we can inspect it if we want
+        FileOutputStream fos = new FileOutputStream("sample." + resource.getFilename() + ".pdf");
+        fos.write(arrayOutputStream.toByteArray());
+        fos.flush();
+        fos.close();
+
+        arrayOutputStream.close();
     }
 
     @Test
