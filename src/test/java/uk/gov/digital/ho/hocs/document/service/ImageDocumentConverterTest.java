@@ -56,7 +56,7 @@ public class ImageDocumentConverterTest {
             inputStream.close();
             assertEquals(size, arrayOutputStream.toByteArray().length);
 
-            //Write the file to the project root so we can inspect it if we want
+            //Write the file to the project root, so we can inspect it if we want
             FileOutputStream fos = new FileOutputStream("sample." + extension + ".pdf");
             fos.write(arrayOutputStream.toByteArray());
             fos.flush();
