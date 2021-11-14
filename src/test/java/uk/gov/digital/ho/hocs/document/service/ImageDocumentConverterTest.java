@@ -46,23 +46,22 @@ public class ImageDocumentConverterTest {
         FileInputStream inputStream = new FileInputStream(resource.getFile());
 
         Document pdf = new Document();
-        final ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
-        PdfWriter.getInstance(pdf, arrayOutputStream);
-        pdf.open();
+        try (ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream()) {
+            PdfWriter.getInstance(pdf, arrayOutputStream);
+            pdf.open();
 
-        imageDocumentConverter.convertToPdf(pdf, extension, inputStream);
+            imageDocumentConverter.convertToPdf(pdf, extension, inputStream);
 
-        pdf.close();
-        inputStream.close();
-        assertEquals(size, arrayOutputStream.toByteArray().length);
+            pdf.close();
+            inputStream.close();
+            assertEquals(size, arrayOutputStream.toByteArray().length);
 
-        //Write the file to the project root so we can inspect it if we want
-        FileOutputStream fos = new FileOutputStream("sample." + extension + ".pdf");
-        fos.write(arrayOutputStream.toByteArray());
-        fos.flush();
-        fos.close();
-
-        arrayOutputStream.close();
+            //Write the file to the project root so we can inspect it if we want
+            FileOutputStream fos = new FileOutputStream("sample." + extension + ".pdf");
+            fos.write(arrayOutputStream.toByteArray());
+            fos.flush();
+            fos.close();
+        }
     }
 
     @Test
