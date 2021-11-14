@@ -1,7 +1,5 @@
-package uk.gov.digital.ho.hocs.document;
+package uk.gov.digital.ho.hocs.document.integration;
 
-import com.itextpdf.text.DocumentException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -11,25 +9,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class DocumentConversionResourceTest {
+public class DocumentConversionControllerTest {
 
     @Value("classpath:testdata/sample.docx")
     private Resource docx;
@@ -74,15 +71,13 @@ public class DocumentConversionResourceTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ExtendedDocumentConverter extendedDocumentConverter;
 
     @Test
     public void shouldReturn200ForValidFileUpload() throws IOException {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(docx.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -90,7 +85,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -99,7 +94,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(tif.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -107,7 +102,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -116,7 +111,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(jpg.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -124,7 +119,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -133,7 +128,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(doc.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -141,7 +136,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -150,7 +145,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(docx.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -158,7 +153,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -166,7 +161,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(pdf.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -174,7 +169,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -183,7 +178,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(qt.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -191,7 +186,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
 
     }
 
@@ -200,7 +195,7 @@ public class DocumentConversionResourceTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
         map.set("file", new FileSystemResource(none.getFile()));
 
         ResponseEntity<String> response = restTemplate.exchange("/convert",
@@ -208,7 +203,7 @@ public class DocumentConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
 
     }
 
@@ -221,14 +216,14 @@ public class DocumentConversionResourceTest {
         map.set("file", new FileSystemResource(tif.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(tifPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length);
+        assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length);
     }
 
     @Test
@@ -240,14 +235,14 @@ public class DocumentConversionResourceTest {
         map.set("file", new FileSystemResource(gif.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(gifPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length);
+        assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length);
     }
 
     @Test
@@ -259,14 +254,14 @@ public class DocumentConversionResourceTest {
         map.set("file", new FileSystemResource(jpg.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(jpgPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length);
+        assertEquals(bytes.length,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Objects.requireNonNull(response.getBody()).length);
     }
 
     @Test
@@ -278,84 +273,13 @@ public class DocumentConversionResourceTest {
         map.set("file", new FileSystemResource(png.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(pngPdf.getFile()));
-        assertEquals(bytes.length, response.getBody().length);
-    }
-
-    @Test
-    public void testOkExtDocConverterPdfAndContents() throws IOException {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "multipart/form-data");
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-        map.set("file", new FileSystemResource(pdf.getFile()));
-
-        ResponseEntity<byte[]> converted = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
-
-        assertThat(converted.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        final byte[] originalBytes = FileUtils.readFileToByteArray(pdf.getFile());
-        assertArrayEquals(originalBytes, converted.getBody());
-    }
-
-    @Test
-    public void textExtendedDocumentConverterTiffDirectly() throws IOException, DocumentException {
-        FileInputStream inputStream = new FileInputStream(tif.getFile());
-        final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("tif", inputStream);
-        inputStream.close();
-        assertEquals(2511535, convertedBytes.length);
-    }
-
-    @Test
-    public void textExtendedDocumentConverterPdfDirectly() throws IOException, DocumentException {
-        FileInputStream inputStream = new FileInputStream(pdf.getFile());
-        final byte[] convertedBytes = extendedDocumentConverter.convertToPdf("pdf", inputStream);
-        inputStream.close();
-        final byte[] pdfBytes = IOUtils.toByteArray(new FileInputStream(pdf.getFile()));
-        assertEquals(pdfBytes.length, convertedBytes.length);
-        assertArrayEquals(pdfBytes, convertedBytes); // same file - same timestamp - can compare contents
-    }
-
-    @Test
-    public void checkExtendedSupport() {
-        assertTrue(extendedDocumentConverter.isSupported("pdf"));
-        assertTrue(extendedDocumentConverter.isSupported("jpg"));
-        assertTrue(extendedDocumentConverter.isSupported("png"));
-        assertTrue(extendedDocumentConverter.isSupported("tif"));
-        assertTrue(extendedDocumentConverter.isSupported("gif"));
-        assertTrue(extendedDocumentConverter.isSupported("jpeg"));
-        assertTrue(extendedDocumentConverter.isSupported("tiff"));
-
-        assertFalse(extendedDocumentConverter.isSupported("doc"));
-        assertFalse(extendedDocumentConverter.isSupported("rtf"));
-        assertFalse(extendedDocumentConverter.isSupported("txt"));
-        assertFalse(extendedDocumentConverter.isSupported("docx"));
-    }
-
-    @Test
-    public void createFiles() throws IOException, DocumentException {
-        createFile("gif", gif.getFile());
-        createFile("tif", tif.getFile());
-        createFile("png", png.getFile());
-        createFile("jpg", jpg.getFile());
-    }
-
-    private void createFile(String ext, File file) throws IOException, DocumentException {
-        FileInputStream inputStream = new FileInputStream(file);
-        final byte[] convertedBytes = extendedDocumentConverter.convertToPdf(ext, inputStream);
-        inputStream.close();
-        FileOutputStream fos = new FileOutputStream("sample." + ext + ".pdf");
-        fos.write(convertedBytes);
-        fos.flush();
-        fos.close();
+        assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length);
     }
 }

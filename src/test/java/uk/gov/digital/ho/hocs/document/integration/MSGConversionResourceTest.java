@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.document;
+package uk.gov.digital.ho.hocs.document.integration;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -8,16 +8,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -36,8 +37,6 @@ public class MSGConversionResourceTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private MSGDocumentConverter msgDocumentConverter;
 
     @Test
     public void testMsg1_Ok() throws IOException {
@@ -48,11 +47,11 @@ public class MSGConversionResourceTest {
         map.set("file", new FileSystemResource(msg1.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -65,11 +64,11 @@ public class MSGConversionResourceTest {
         map.set("file", new FileSystemResource(msg2.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
     }
 
@@ -82,29 +81,12 @@ public class MSGConversionResourceTest {
         map.set("file", new FileSystemResource(msg3.getFile()));
 
         ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
-                                                                HttpMethod.POST,
-                                                                new HttpEntity<>(map, headers),
-                                                                byte[].class);
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
 
-    }
-
-
-    @Test
-    public void checkExtendedSupport() {
-        assertTrue(msgDocumentConverter.isSupported("msg"));
-
-        assertFalse(msgDocumentConverter.isSupported("jpg"));
-        assertFalse(msgDocumentConverter.isSupported("png"));
-        assertFalse(msgDocumentConverter.isSupported("tif"));
-        assertFalse(msgDocumentConverter.isSupported("gif"));
-        assertFalse(msgDocumentConverter.isSupported("jpeg"));
-        assertFalse(msgDocumentConverter.isSupported("tiff"));
-        assertFalse(msgDocumentConverter.isSupported("doc"));
-        assertFalse(msgDocumentConverter.isSupported("rtf"));
-        assertFalse(msgDocumentConverter.isSupported("txt"));
-        assertFalse(msgDocumentConverter.isSupported("docx"));
     }
 
 }
