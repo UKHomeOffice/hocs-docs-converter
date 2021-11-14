@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 class MsgDocumentConverter {
 
@@ -28,23 +29,13 @@ class MsgDocumentConverter {
     private final ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
 
     public boolean isSupported(String fileExtension) {
-        if (StringUtils.isEmpty(fileExtension)) {
-            return false;
-        }
-        final String extension = fileExtension.trim();
-        for (String ext : SUPPORTED_EXTENSIONS) {
-            if (ext.equalsIgnoreCase(extension)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(SUPPORTED_EXTENSIONS).anyMatch(it -> it.equalsIgnoreCase(fileExtension));
     }
 
     public void convertToPdf(Document pdf, InputStream inputStream) throws DocumentException, IOException {
         MsgContents contents = extractContents(inputStream);
 
         pdf.newPage();
-
         pdf.add(new Paragraph(String.format("From: %s [%s]", contents.getFromEmail(), StringUtils.isEmpty(contents.getFromName()) ? "N/A" : contents.getFromName())));
         pdf.add(new Paragraph(MessageFormat.format("To: {0}", StringUtils.isEmpty(contents.getToEmail()) ? contents.getToName() : contents.getToEmail())));
         pdf.add(new Paragraph("Subject: " + contents.getSubject()));

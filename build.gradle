@@ -8,24 +8,30 @@ group = 'uk.gov.digital.ho.hocs'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	implementation('org.springframework.boot:spring-boot-starter-web:2.5.6') {
+	implementation('org.springframework.boot:spring-boot-starter-web') {
 		exclude(module: 'spring-boot-starter-tomcat')
 	}
 
-	implementation 'org.springframework.boot:spring-boot-starter-undertow:2.5.6'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator:2.5.6'
+	implementation 'org.springframework.boot:spring-boot-starter-undertow'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
 	implementation 'net.logstash.logback:logstash-logback-encoder:6.6'
 
 	implementation 'org.simplejavamail:outlook-message-parser:1.7.12'
 	implementation 'org.jodconverter:jodconverter-spring-boot-starter:4.4.2'
 	implementation 'org.jodconverter:jodconverter-local:4.4.2'
-	implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.1'
+	implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.2'
 
 	implementation 'com.itextpdf:itextpdf:5.5.13.2'
 	implementation 'com.itextpdf.tool:xmlworker:5.5.13.2'
@@ -33,9 +39,9 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.5.6'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }
 

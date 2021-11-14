@@ -15,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 class ImageDocumentConverter {
@@ -30,6 +31,10 @@ class ImageDocumentConverter {
     private static final String PNG_EXT = "png";
 
     private static final String[] SUPPORTED_EXTENSIONS = {TIF_EXT, TIFF_EXT, JPEG_EXT, JPG_EXT, GIF_EXT, PNG_EXT};
+
+    public boolean isSupported(String fileExtension) {
+        return Arrays.stream(SUPPORTED_EXTENSIONS).anyMatch(it -> it.equalsIgnoreCase(fileExtension));
+    }
 
     public void convertToPdf(Document pdf, String ext, InputStream inputStream) throws DocumentException, IOException {
 
@@ -58,19 +63,6 @@ class ImageDocumentConverter {
                 pdf.add(image);
             }
         }
-    }
-
-    public boolean isSupported(String fileExtension) {
-        if (fileExtension == null || fileExtension.trim().isEmpty()) {
-            return false;
-        }
-        final String extension = fileExtension.trim();
-        for (String ext : SUPPORTED_EXTENSIONS) {
-            if (ext.equalsIgnoreCase(extension)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private List<Image> convertTiff(InputStream inputStream) throws IOException {

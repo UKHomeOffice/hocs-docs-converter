@@ -40,12 +40,13 @@ public class DocumentConversionService {
         this.jodConverter = jodConverter;
     }
 
-    public void convert(MultipartFile file, HttpServletResponse response) throws IOException {
+    public void convert(MultipartFile file, HttpServletResponse response) {
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         if (fileExtension == null) {
-            throw new ApplicationExceptions.DocumentFormatException(String.format("Cannot determine document format: %s, unsupported file format", file.getOriginalFilename()), DOCUMENT_CONVERSION_INVALID_FORMAT);
+            throw new ApplicationExceptions.DocumentFormatException(String.format("Cannot determine document format: %s", file.getOriginalFilename()), DOCUMENT_CONVERSION_INVALID_FORMAT);
         } else {
+            fileExtension = fileExtension.trim();
 
             try (InputStream inputStream = new ByteArrayInputStream(file.getBytes());
                  ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -64,20 +65,16 @@ public class DocumentConversionService {
                             .as(DefaultDocumentFormatRegistry.PDF)
                             .execute();
                 } else {
-
-                    throw new ApplicationExceptions.DocumentFormatException(String.format("Cannot determine document format: %s, unsupported file format", file.getOriginalFilename()), DOCUMENT_CONVERSION_INVALID_FORMAT);
+                    throw new ApplicationExceptions.DocumentFormatException(String.format("Cannot convert document type: %s, unsupported file format", file.getOriginalFilename()), DOCUMENT_CONVERSION_INVALID_FORMAT);
                 }
 
-                response.setStatus(HttpStatus.OK.value());
                 response.getOutputStream().write(outputStream.toByteArray());
 
             } catch (OfficeException | DocumentException | IOException e) {
                 throw new ApplicationExceptions.DocumentConversionException(String.format("Failed to convert document %s", file.getOriginalFilename()), DOCUMENT_CONVERSION_FAILURE, e);
             }
 
-            response.flushBuffer();
             log.info("Document Conversion complete for {}. Event {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
-
         }
     }
 
