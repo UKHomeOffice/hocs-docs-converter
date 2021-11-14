@@ -1,8 +1,8 @@
 info:
-app:
-  fullname: Hocs Document Conversion Service
-  name: ${name:hocs-document-conversion-service}
-  version: ${version:0.0.1}
+  app:
+    fullname: Hocs Document Conversion Service
+    name: ${name:hocs-document-conversion-service}
+    version: ${version:0.0.1}
 
 server:
   http2:
