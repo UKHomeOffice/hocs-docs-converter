@@ -15,10 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 import uk.gov.digital.ho.hocs.document.application.exception.ApplicationExceptions;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.DOCUMENT_CONVERSION_FAILURE;
@@ -47,8 +46,9 @@ public class DocumentConversionService {
         } else {
             fileExtension = fileExtension.trim();
 
-            try (InputStream inputStream = new ByteArrayInputStream(file.getBytes());
-                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            try (InputStream inputStream = file.getInputStream()) {
+
+                OutputStream outputStream = response.getOutputStream();
 
                 DocumentFormat supportedJodFormat = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
 
@@ -67,8 +67,6 @@ public class DocumentConversionService {
                     throw new ApplicationExceptions.DocumentFormatException(String.format("Cannot convert document type: %s, unsupported file format", file.getOriginalFilename()), DOCUMENT_CONVERSION_INVALID_FORMAT);
                 }
 
-                response.getOutputStream().write(outputStream.toByteArray());
-
             } catch (OfficeException | DocumentException | IOException e) {
                 throw new ApplicationExceptions.DocumentConversionException(String.format("Failed to convert document %s", file.getOriginalFilename()), DOCUMENT_CONVERSION_FAILURE, e);
             }
@@ -77,7 +75,7 @@ public class DocumentConversionService {
         }
     }
 
-    private void convertImageToPdf(String fileExtension, InputStream inputStream, ByteArrayOutputStream outputStream) throws DocumentException, IOException {
+    private void convertImageToPdf(String fileExtension, InputStream inputStream, OutputStream outputStream) throws DocumentException, IOException {
         Document pdf = new Document();
         PdfWriter.getInstance(pdf, outputStream);
         pdf.open();
@@ -85,7 +83,7 @@ public class DocumentConversionService {
         pdf.close();
     }
 
-    private void convertMsgToPdf(InputStream inputStream, ByteArrayOutputStream outputStream) throws DocumentException, IOException {
+    private void convertMsgToPdf(InputStream inputStream, OutputStream outputStream) throws DocumentException, IOException {
         Document pdf = new Document();
         PdfWriter.getInstance(pdf, outputStream);
         pdf.open();
