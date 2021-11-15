@@ -51,7 +51,7 @@ public class MSGConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 byte[].class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -68,7 +68,7 @@ public class MSGConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 byte[].class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -85,7 +85,7 @@ public class MSGConversionResourceTest {
                 new HttpEntity<>(map, headers),
                 byte[].class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 

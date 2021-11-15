@@ -85,7 +85,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -102,7 +102,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -119,7 +119,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -136,7 +136,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -153,7 +153,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -169,7 +169,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
 
@@ -186,7 +186,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
     }
 
@@ -203,7 +203,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 String.class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
     }
 
@@ -220,7 +220,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 byte[].class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(tifPdf.getFile()));
         assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length);
@@ -239,7 +239,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 byte[].class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(gifPdf.getFile()));
         assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length);
@@ -258,7 +258,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 byte[].class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(jpgPdf.getFile()));
         assertEquals(bytes.length,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     Objects.requireNonNull(response.getBody()).length);
@@ -277,7 +277,7 @@ public class DocumentConversionControllerTest {
                 new HttpEntity<>(map, headers),
                 byte[].class);
 
-        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         final byte[] bytes = IOUtils.toByteArray(new FileInputStream(pngPdf.getFile()));
         assertEquals(bytes.length, Objects.requireNonNull(response.getBody()).length);

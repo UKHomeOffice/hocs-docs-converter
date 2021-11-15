@@ -90,15 +90,15 @@ public class MsgDocumentConverterTest {
 
         MsgContents result = msgDocumentConverter.extractContents(fileInputStream);
 
-        assertEquals(result.getSentOn(), "Sat Aug 12 19:25:25 BST 2006");
-        assertEquals(result.getBodyHTML().length(), 142);
-        assertEquals(result.getBodyText().length(), 150);
-        assertEquals(result.getFromName(), "John Doe");
-        assertEquals(result.getToEmail(), "testadd@example.org");
-        assertEquals(result.getToName(), "testadd@example.org");
+        assertEquals("Sat Aug 12 19:25:25 BST 2006", result.getSentOn());
+        assertEquals(142, result.getBodyHTML().length());
+        assertEquals(150, result.getBodyText().length());
+        assertEquals("John Doe", result.getFromName());
+        assertEquals("testadd@example.org", result.getToEmail());
+        assertEquals("testadd@example.org", result.getToName());
         // this email subject is long because it has been inserted into an existing sample .msg file. Changing the
         // length breaks the checksum
-        assertEquals(result.getSubject(), "Email Subject Email Subject Email Subject Email Subject Email Subj.");
+        assertEquals("Email Subject Email Subject Email Subject Email Subject Email Subj.", result.getSubject());
 
     }
 }
