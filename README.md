@@ -1,6 +1,6 @@
 # HOCS Document Converter Service
 
-Simple document converter service which accepts any document as a parameter and returns a PDF converted
+Simple document converter service which accepts any document as a parameter and returns a PDF
 
 ---
 
