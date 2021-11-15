@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.document.application;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,10 +21,6 @@ public class RequestData implements HandlerInterceptor {
     public static final ThreadLocal<Map<String, String>> THREAD_LOCAL = new ThreadLocal<>();
 
     private static final String ANONYMOUS = "anonymous";
-
-    private static boolean isSet(String value) {
-        return value != null && !value.equals("");
-    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -55,22 +52,22 @@ public class RequestData implements HandlerInterceptor {
 
     private String initialiseCorrelationId(HttpServletRequest request) {
         String correlationId = request.getHeader(CORRELATION_ID_HEADER);
-        return isSet(correlationId) ? correlationId : UUID.randomUUID().toString();
+        return StringUtils.hasText(correlationId) ? correlationId : UUID.randomUUID().toString();
     }
 
     private String initialiseUserId(HttpServletRequest request) {
         String userId = request.getHeader(USER_ID_HEADER);
-        return isSet(userId) ? userId : ANONYMOUS;
+        return StringUtils.hasText(userId) ? userId : ANONYMOUS;
     }
 
     private String initialiseUserName(HttpServletRequest request) {
         String username = request.getHeader(USERNAME_HEADER);
-        return isSet(username) ? username : ANONYMOUS;
+        return StringUtils.hasText(username) ? username : ANONYMOUS;
     }
 
     private String initialiseGroups(HttpServletRequest request) {
         String groups = request.getHeader(GROUP_HEADER);
-        return isSet(groups) ? groups : "/QU5PTllNT1VTCg==";
+        return StringUtils.hasText(groups) ? groups : "/QU5PTllNT1VTCg==";
     }
 
     public String correlationId() {

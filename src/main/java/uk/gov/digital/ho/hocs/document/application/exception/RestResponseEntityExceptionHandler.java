@@ -19,7 +19,7 @@ import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.EXCEPTION;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.STACKTRACE;
-import static uk.gov.digital.ho.hocs.document.application.LogEvent.UNCAUGHT_EXCEPTION;
+import static uk.gov.digital.ho.hocs.document.application.LogEvent.DOCUMENT_CONVERSION_UNCAUGHT_EXCEPTION;
 
 @ControllerAdvice
 @Slf4j
@@ -35,7 +35,7 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(ApplicationExceptions.DocumentConversionException.class)
     public ResponseEntity handle(ApplicationExceptions.DocumentConversionException e) {
         log.error("ApplicationExceptions.DocumentConversionException: {}", e.getMessage(), value(EVENT, e.getEvent()), value(EXCEPTION, e.getException()));
-        return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
+        return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -66,7 +66,7 @@ public class RestResponseEntityExceptionHandler {
     public ResponseEntity handle(Exception e) {
         Writer stackTraceWriter = new StringWriter();
         e.printStackTrace(new PrintWriter(stackTraceWriter));
-        log.error("Exception: {}, Event: {}, Stack: {}", e.getMessage(), value(EVENT, UNCAUGHT_EXCEPTION),
+        log.error("Exception: {}, Event: {}, Stack: {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_UNCAUGHT_EXCEPTION),
                 value(STACKTRACE, stackTraceWriter.toString()));
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }

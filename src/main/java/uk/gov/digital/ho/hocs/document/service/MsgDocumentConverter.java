@@ -7,6 +7,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.tool.xml.ElementList;
 import com.itextpdf.tool.xml.XMLWorkerHelper;
 import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.simplejavamail.outlookmessageparser.OutlookMessageParser;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
@@ -22,6 +23,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.document.application.LogEvent.DOCUMENT_CONVERSION_MSG_PARSE_FAILURE;
+import static uk.gov.digital.ho.hocs.document.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.document.application.LogEvent.EXCEPTION;
+
+@Slf4j
 class MsgDocumentConverter {
 
     private static final String MSG_EXT = "msg";
@@ -99,6 +106,7 @@ class MsgDocumentConverter {
                 }
             }
         } catch (RuntimeWorkerException | DocumentException | IOException e) {
+            log.warn("Failed to Parse MSG Elements: {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_MSG_PARSE_FAILURE), value(EXCEPTION, e));
             return false;
         }
         return true;

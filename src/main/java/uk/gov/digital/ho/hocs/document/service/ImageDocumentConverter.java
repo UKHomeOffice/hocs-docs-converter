@@ -10,7 +10,6 @@ import com.itextpdf.text.pdf.RandomAccessFileOrArray;
 import com.itextpdf.text.pdf.codec.GifImage;
 import com.itextpdf.text.pdf.codec.PngImage;
 import com.itextpdf.text.pdf.codec.TiffImage;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,13 +42,13 @@ class ImageDocumentConverter {
         if (TIF_EXT.equalsIgnoreCase(ext) || TIFF_EXT.equalsIgnoreCase(ext)) {
             images.addAll(convertTiff(inputStream));
         } else if (JPG_EXT.equalsIgnoreCase(ext) || JPEG_EXT.equalsIgnoreCase(ext)) {
-            Image img = new Jpeg(IOUtils.toByteArray(inputStream));
+            Image img = new Jpeg(inputStream.readAllBytes());
             images.add(img);
         } else if (GIF_EXT.equalsIgnoreCase(ext)) {
-            GifImage gif = new GifImage(IOUtils.toByteArray(inputStream));
+            GifImage gif = new GifImage(inputStream.readAllBytes());
             images.add(gif.getImage(1));
         } else if (PNG_EXT.equalsIgnoreCase(ext)) {
-            Image img = PngImage.getImage(IOUtils.toByteArray(inputStream));
+            Image img = PngImage.getImage(inputStream.readAllBytes());
             images.add(img);
         }
 
@@ -66,7 +65,7 @@ class ImageDocumentConverter {
     }
 
     private List<Image> convertTiff(InputStream inputStream) throws IOException {
-        RandomAccessSource source = new RandomAccessSourceFactory().createSource(IOUtils.toByteArray(inputStream));
+        RandomAccessSource source = new RandomAccessSourceFactory().createSource(inputStream.readAllBytes());
         RandomAccessFileOrArray tiffFile = new RandomAccessFileOrArray(source);
         int numberOfPages = TiffImage.getNumberOfPages(tiffFile);
 
