@@ -18,8 +18,6 @@ public class RequestData implements HandlerInterceptor {
     public static final String USERNAME_HEADER = "X-Auth-Username";
     public static final String GROUP_HEADER = "X-Auth-Groups";
 
-    private static final String ANONYMOUS = "anonymous";
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         MDC.clear();
@@ -52,17 +50,17 @@ public class RequestData implements HandlerInterceptor {
 
     private String initialiseUserId(HttpServletRequest request) {
         String userId = request.getHeader(USER_ID_HEADER);
-        return StringUtils.hasText(userId) ? userId : ANONYMOUS;
+        return StringUtils.hasText(userId) ? userId : "";
     }
 
     private String initialiseUserName(HttpServletRequest request) {
         String username = request.getHeader(USERNAME_HEADER);
-        return StringUtils.hasText(username) ? username : ANONYMOUS;
+        return StringUtils.hasText(username) ? username : "";
     }
 
     private String initialiseGroups(HttpServletRequest request) {
         String groups = request.getHeader(GROUP_HEADER);
-        return StringUtils.hasText(groups) ? groups : "/QU5PTllNT1VTCg==";
+        return StringUtils.hasText(groups) ? groups : "";
     }
 
     public String correlationId() {
