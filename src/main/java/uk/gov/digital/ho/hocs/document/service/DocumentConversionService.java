@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.digital.ho.hocs.document.application.exception.ApplicationExceptions;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,7 +37,7 @@ public class DocumentConversionService {
         this.jodConverter = jodConverter;
     }
 
-    public void convert(MultipartFile file, HttpServletResponse response) {
+    public void convert(MultipartFile file, OutputStream outputStream) {
         String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         if (fileExtension == null) {
@@ -47,8 +46,6 @@ public class DocumentConversionService {
             fileExtension = fileExtension.trim();
 
             try (InputStream inputStream = file.getInputStream()) {
-
-                OutputStream outputStream = response.getOutputStream();
 
                 DocumentFormat supportedJodFormat = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
 

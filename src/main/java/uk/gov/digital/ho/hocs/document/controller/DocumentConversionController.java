@@ -37,7 +37,7 @@ public class DocumentConversionController {
     // method to convert file
     @PostMapping("/convert")
     public void convert(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws IOException {
-        documentConversionService.convert(file, response);
+        documentConversionService.convert(file, response.getOutputStream());
         setResponseHeaders(file.getOriginalFilename(), response);
     }
 }
