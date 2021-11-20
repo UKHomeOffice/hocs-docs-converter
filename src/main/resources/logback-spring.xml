@@ -25,9 +25,9 @@
                     <pattern>
                         {
                         "timestamp" : "%date{\"yyyy-MM-dd'T'HH:mm:ss,SSSXXX\", UTC}",
-                        "thread"    : "%thread",
-                        "service"   : " ${appName}",
-                        "logger"    : "%logger{50}",
+                        "thread" : "%thread",
+                        "service" : " ${appName}",
+                        "logger" : "%logger{50}",
                         "exception" : "%exception"
                         }
                     </pattern>
@@ -48,10 +48,6 @@
     </logger>
 
     <logger name="org.jodconverter" additivity="false" level="ERROR">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
-    <logger name="com.zaxxer" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
