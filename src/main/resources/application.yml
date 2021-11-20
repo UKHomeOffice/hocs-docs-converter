@@ -25,8 +25,11 @@ spring:
       location: ${java.io.tmpdir}
 
 management:
+  endpoints:
+    enabled-by-default: false
   endpoint:
     health:
+      enabled: true
       probes:
         enabled: true
 
