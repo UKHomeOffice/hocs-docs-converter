@@ -1,0 +1,38 @@
+info:
+  app:
+    fullname: Hocs Document Conversion Service
+    name: ${name:hocs-document-conversion-service}
+    version: ${version:0.0.1}
+
+server:
+  http2:
+    enabled: true
+  port: 8084
+  shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: application/pdf
+
+spring:
+  main:
+    banner-mode: off
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 52MB
+      file-size-threshold: 20MB
+      location: ${java.io.tmpdir}
+
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+      probes:
+        enabled: true
+
+jodconverter:
+  local:
+    enabled: true
