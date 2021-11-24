@@ -33,7 +33,7 @@ steps:
       branch:
         exlude:
           - main
-          - dependabot
+          - "dependabot*"
     depends_on:
       - test project
 
