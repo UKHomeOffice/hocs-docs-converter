@@ -31,8 +31,9 @@ steps:
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
     when:
       branch:
-        exclude:
+        exlude:
           - main
+          - dependabot
     depends_on:
       - test project
 
