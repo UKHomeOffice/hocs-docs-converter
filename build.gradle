@@ -36,7 +36,7 @@ dependencies {
 	annotationProcessor "org.springframework:spring-context-indexer:5.3.13"
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.5.6'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.6'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.1'
 
 }
 
