@@ -33,7 +33,7 @@ jacocoTestReport {
 }
 
 dependencies {
-	implementation('org.springframework.boot:spring-boot-starter-web:2.5.6') {
+	implementation('org.springframework.boot:spring-boot-starter-web:2.6.1') {
 		exclude(module: 'spring-boot-starter-tomcat')
 	}
 
