@@ -1,4 +1,7 @@
+
 # HOCS Document Converter Service
+
+[![CodeQL](https://github.com/UKHomeOffice/hocs-docs-converter/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UKHomeOffice/hocs-docs-converter/actions/workflows/codeql-analysis.yml)
 
 Simple document converter service which accepts any document as a parameter and returns a PDF
 
