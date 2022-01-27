@@ -5,6 +5,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
@@ -17,6 +18,7 @@ import uk.gov.digital.ho.hocs.document.application.exception.ApplicationExceptio
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Locale;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.DOCUMENT_CONVERSION_FAILURE;
@@ -49,7 +51,12 @@ public class DocumentConversionService {
 
                 DocumentFormat supportedJodFormat = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
 
-                if (imageDocumentConverter.isSupported(fileExtension)) {
+                if (fileExtension.equalsIgnoreCase("pdf")){
+                    log.info("Document conversion skipped for PDF {}. Event {}",
+                            file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
+                    IOUtils.copy(inputStream, outputStream);
+                    return;
+                } else if (imageDocumentConverter.isSupported(fileExtension)) {
                     convertImageToPdf(fileExtension, inputStream, outputStream);
                 } else if (msgDocumentConverter.isSupported(fileExtension)) {
                     convertMsgToPdf(inputStream, outputStream);
