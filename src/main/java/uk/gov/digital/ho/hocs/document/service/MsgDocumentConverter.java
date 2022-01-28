@@ -13,6 +13,7 @@ import org.simplejavamail.outlookmessageparser.OutlookMessageParser;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
+import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.document.domain.MsgContents;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +30,7 @@ import static uk.gov.digital.ho.hocs.document.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.EXCEPTION;
 
 @Slf4j
+@Service
 class MsgDocumentConverter {
 
     private static final String MSG_EXT = "msg";

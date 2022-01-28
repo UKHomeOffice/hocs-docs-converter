@@ -18,7 +18,6 @@ import uk.gov.digital.ho.hocs.document.application.exception.ApplicationExceptio
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Locale;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.DOCUMENT_CONVERSION_FAILURE;
@@ -31,12 +30,16 @@ import static uk.gov.digital.ho.hocs.document.application.LogEvent.EVENT;
 public class DocumentConversionService {
 
     private final DocumentConverter jodConverter;
-    private final ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
-    private final MsgDocumentConverter msgDocumentConverter = new MsgDocumentConverter();
+    private final ImageDocumentConverter imageDocumentConverter;
+    private final MsgDocumentConverter msgDocumentConverter;
 
     @Autowired
-    DocumentConversionService(DocumentConverter jodConverter) {
+    DocumentConversionService(DocumentConverter jodConverter,
+                              ImageDocumentConverter imageDocumentConverter,
+                              MsgDocumentConverter msgDocumentConverter) {
         this.jodConverter = jodConverter;
+        this.imageDocumentConverter = imageDocumentConverter;
+        this.msgDocumentConverter = msgDocumentConverter;
     }
 
     public void convert(MultipartFile file, OutputStream outputStream) {
