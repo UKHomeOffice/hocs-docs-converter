@@ -10,6 +10,7 @@ import com.itextpdf.text.pdf.RandomAccessFileOrArray;
 import com.itextpdf.text.pdf.codec.GifImage;
 import com.itextpdf.text.pdf.codec.PngImage;
 import com.itextpdf.text.pdf.codec.TiffImage;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Service
 class ImageDocumentConverter {
 
     private static final int PDF_WIDTH = 595;
