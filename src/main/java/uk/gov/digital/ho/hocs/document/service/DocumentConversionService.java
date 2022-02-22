@@ -5,6 +5,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.jodconverter.core.DocumentConverter;
 import org.jodconverter.core.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.core.document.DocumentFormat;
@@ -29,12 +30,16 @@ import static uk.gov.digital.ho.hocs.document.application.LogEvent.EVENT;
 public class DocumentConversionService {
 
     private final DocumentConverter jodConverter;
-    private final ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
-    private final MsgDocumentConverter msgDocumentConverter = new MsgDocumentConverter();
+    private final ImageDocumentConverter imageDocumentConverter;
+    private final MsgDocumentConverter msgDocumentConverter;
 
     @Autowired
-    DocumentConversionService(DocumentConverter jodConverter) {
+    DocumentConversionService(DocumentConverter jodConverter,
+                              ImageDocumentConverter imageDocumentConverter,
+                              MsgDocumentConverter msgDocumentConverter) {
         this.jodConverter = jodConverter;
+        this.imageDocumentConverter = imageDocumentConverter;
+        this.msgDocumentConverter = msgDocumentConverter;
     }
 
     public void convert(MultipartFile file, OutputStream outputStream) {
@@ -49,7 +54,12 @@ public class DocumentConversionService {
 
                 DocumentFormat supportedJodFormat = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
 
-                if (imageDocumentConverter.isSupported(fileExtension)) {
+                if (fileExtension.equalsIgnoreCase("pdf")){
+                    log.info("Document conversion skipped for PDF {}. Event {}",
+                            file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
+                    IOUtils.copy(inputStream, outputStream);
+                    return;
+                } else if (imageDocumentConverter.isSupported(fileExtension)) {
                     convertImageToPdf(fileExtension, inputStream, outputStream);
                 } else if (msgDocumentConverter.isSupported(fileExtension)) {
                     convertMsgToPdf(inputStream, outputStream);
