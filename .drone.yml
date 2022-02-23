@@ -17,7 +17,7 @@ steps:
       - build project
 
   - name: sonar scanner
-    image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
+    image: quay.io/ukhomeofficedigital/sonar-scanner:v4.6
     commands:
       - sonar-scanner -Dsonar.projectVersion="$(git rev-parse --abbrev-ref HEAD)"
     depends_on:
@@ -92,7 +92,7 @@ steps:
       - git checkout $${VERSION}
 
   - name: deploy to cs-dev
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    image: quay.io/ukhomeofficedigital/kd:v1.19.13
     commands:
       - cd kube
       - ./deploy.sh
@@ -111,7 +111,7 @@ steps:
         - push
 
   - name: deploy to wcs-dev
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    image: quay.io/ukhomeofficedigital/kd:v1.19.13
     commands:
       - cd kube
       - ./deploy.sh
@@ -172,7 +172,7 @@ steps:
         - release
 
   - name: deploy to cs-qa
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    image: quay.io/ukhomeofficedigital/kd:v1.19.13
     commands:
       - source version.txt
       - echo $VERSION
@@ -192,7 +192,7 @@ steps:
       - generate & tag build
 
   - name: deploy to wcs-qa
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    image: quay.io/ukhomeofficedigital/kd:v1.19.13
     commands:
       - source version.txt
       - echo $VERSION
@@ -212,7 +212,7 @@ steps:
       - generate & tag build
 
   - name: deploy to not prod
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    image: quay.io/ukhomeofficedigital/kd:v1.19.13
     commands:
       - cd kube
       - ./deploy.sh
@@ -232,7 +232,7 @@ steps:
           - "*-prod"
 
   - name: deploy to prod
-    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    image: quay.io/ukhomeofficedigital/kd:v1.19.13
     commands:
       - cd kube
       - ./deploy.sh
