@@ -6,16 +6,15 @@ RUN java -Djarmode=layertools -jar *.jar extract
 
 FROM quay.io/ukhomeofficedigital/hocs-libreoffice
 
+EXPOSE 8080
+USER 10000
+
 WORKDIR /app
 
 COPY scripts/run.sh /app/scripts/run.sh
 
-COPY --from=builder dependencies/ ./
-COPY --from=builder spring-boot-loader/ ./
-COPY --from=builder application/ ./
-
-EXPOSE 8080
-
-USER ${USER_ID}
+COPY --from=builder dependencies/ app/
+COPY --from=builder spring-boot-loader/ app/
+COPY --from=builder application/ app/
 
 CMD ["sh", "/app/scripts/run.sh"]
