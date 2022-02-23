@@ -1,16 +1,18 @@
 FROM quay.io/ukhomeofficedigital/hocs-base-image as builder
 
-COPY build/libs/*.jar .
+COPY build/libs/hocs-docs-converter.jar .
 
-RUN java -Djarmode=layertools -jar *.jar extract
+RUN java -Djarmode=layertools -jar hocs-docs-converter.jar extract
 
 FROM quay.io/ukhomeofficedigital/hocs-libreoffice
 
 COPY scripts/run.sh /app/scripts/run.sh
 
-COPY --from=builder dependencies/ /app/
-COPY --from=builder spring-boot-loader/ /app/
-COPY --from=builder application/ /app/
+WORKDIR /app
+
+COPY --from=builder dependencies/ ./
+COPY --from=builder spring-boot-loader/ ./
+COPY --from=builder application/ ./
 
 USER 1001
 
