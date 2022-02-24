@@ -2,7 +2,7 @@
 # HOCS Document Converter Service
 
 [![CodeQL](https://github.com/UKHomeOffice/hocs-docs-converter/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UKHomeOffice/hocs-docs-converter/actions/workflows/codeql-analysis.yml)
-[![Build Status](https://drone-gh.acp.homeoffice.gov.uk/api/badges/UKHomeOffice/hocs-docs-converter/status.svg)](https://drone-gh.acp.homeoffice.gov.uk/UKHomeOffice/hocs-docs-converter)
+
 Simple document converter service which accepts any document as a parameter and returns a PDF
 
 ---
