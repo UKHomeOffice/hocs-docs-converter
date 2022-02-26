@@ -9,9 +9,6 @@ server:
     enabled: true
   port: 8084
   shutdown: graceful
-  compression:
-    enabled: true
-    mime-types: application/pdf
 
 spring:
   main:
