@@ -7,6 +7,12 @@ export KUBE_TOKEN=${KUBE_TOKEN}
 export VERSION=${VERSION}
 export CLUSTER_NAME="acp-notprod"
 
+echo
+echo "Deploying hocs-docs-converter to ${ENVIRONMENT}"
+echo "Service version: ${VERSION}"
+echo
+
+
 if [[ ${KUBE_NAMESPACE} == *prod ]]
 then
     export MIN_REPLICAS="2"
