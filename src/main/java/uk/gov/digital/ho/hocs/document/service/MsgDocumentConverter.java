@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.document.service;
 
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -22,9 +23,10 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.util.List;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.document.application.LogEvent.DOCUMENT_CONVERSION_MSG_ATTACHMENT_PARSE_FAILURE;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.DOCUMENT_CONVERSION_MSG_PARSE_FAILURE;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.EXCEPTION;
@@ -33,12 +35,16 @@ import static uk.gov.digital.ho.hocs.document.application.LogEvent.EXCEPTION;
 @Service
 class MsgDocumentConverter {
 
-    private static final String MSG_EXT = "msg";
-    private static final String[] SUPPORTED_EXTENSIONS = {MSG_EXT};
-    private final ImageDocumentConverter imageDocumentConverter = new ImageDocumentConverter();
+    private static final List<String> SUPPORTED_EXTENSIONS = List.of("msg");
+
+    private final ImageDocumentConverter imageDocumentConverter;
+
+    public MsgDocumentConverter(ImageDocumentConverter imageDocumentConverter) {
+        this.imageDocumentConverter = imageDocumentConverter;
+    }
 
     public boolean isSupported(String fileExtension) {
-        return Arrays.stream(SUPPORTED_EXTENSIONS).anyMatch(it -> it.equalsIgnoreCase(fileExtension));
+        return SUPPORTED_EXTENSIONS.contains(fileExtension);
     }
 
     public void convertToPdf(Document pdf, InputStream inputStream) throws DocumentException, IOException {
@@ -114,15 +120,22 @@ class MsgDocumentConverter {
         return true;
     }
 
-    private void processAttachment(Document pdf, OutlookAttachment attachment) throws DocumentException, IOException {
+    private void processAttachment(Document pdf, OutlookAttachment attachment) throws DocumentException {
         // we don't process messages containing messages
         if (!(attachment instanceof OutlookFileAttachment)) {
             return;
         }
+
         OutlookFileAttachment fileAttachment = (OutlookFileAttachment) attachment;
+
         // Only process attachments if they are images
-        imageDocumentConverter.convertToPdf(pdf,
-                StringUtils.remove(fileAttachment.getExtension(), "."),
-                new ByteArrayInputStream(fileAttachment.getData()));
+        try {
+            imageDocumentConverter.convertToPdf(pdf,
+                    StringUtils.remove(fileAttachment.getExtension(), "."),
+                    new ByteArrayInputStream(fileAttachment.getData()));
+        } catch (IOException | BadElementException ex) {
+            log.warn("Failed to process attachment for conversion.", ex.getMessage(),
+                    value(EVENT, DOCUMENT_CONVERSION_MSG_ATTACHMENT_PARSE_FAILURE), value(EXCEPTION, ex));
+        }
     }
 }
