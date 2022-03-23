@@ -4,11 +4,13 @@ package uk.gov.digital.ho.hocs.document.service;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -29,7 +31,16 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class MsgDocumentConverterTest {
 
-    private final MsgDocumentConverter msgDocumentConverter = new MsgDocumentConverter();
+    private MsgDocumentConverter msgDocumentConverter;
+
+    @Autowired
+    public ImageDocumentConverter imageDocumentConverter;
+
+    @BeforeEach
+    public void setup() {
+        msgDocumentConverter =
+                new MsgDocumentConverter(imageDocumentConverter);
+    }
 
     private static Stream<Arguments> getFiles() {
         return Stream.of(
