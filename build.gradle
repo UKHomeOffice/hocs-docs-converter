@@ -43,7 +43,7 @@ dependencies {
 
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.1.1'
 
-	implementation 'org.simplejavamail:outlook-message-parser:1.8.1'
+	implementation 'org.simplejavamail:outlook-message-parser:1.9.0'
 	implementation 'jakarta.activation:jakarta.activation-api:2.0.0'
 
 	implementation('org.jodconverter:jodconverter-spring-boot-starter:4.4.2') {
