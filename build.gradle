@@ -7,30 +7,14 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
+def jaxbVersion = '4.0.0'
+def lombokVersion = '1.18.24'
+
 group = 'uk.gov.digital.ho.hocs'
 sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	mavenCentral()
-}
-
-plugins.withType(JacocoPlugin) {
-	tasks["test"].finalizedBy 'jacocoTestReport'
-}
-
-test {
-	finalizedBy jacocoTestReport // report is always generated after tests run
-}
-
-jacocoTestReport {
-	dependsOn test // tests are required to run before generating the report
-	reports {
-		xml.required = true
-		html.required = false
-		csv.required = false
-		//for XML
-		xml.destination file("${buildDir}/reports/jacoco.xml")
-	}
 }
 
 dependencies {
@@ -43,21 +27,22 @@ dependencies {
 
 	implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 
-	implementation 'org.simplejavamail:outlook-message-parser:1.9.0'
-	implementation 'jakarta.activation:jakarta.activation-api:2.0.0'
 
 	implementation('org.jodconverter:jodconverter-spring-boot-starter:4.4.2') {
 		exclude(module: 'jakarta.activation-api')
 	}
 	implementation 'org.jodconverter:jodconverter-local:4.4.2'
-	implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.2'
+	implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jaxbVersion}"
+	implementation "com.sun.xml.bind:jaxb-impl:${jaxbVersion}"
+	implementation 'jakarta.activation:jakarta.activation-api:2.1.0'
 
 	implementation 'com.itextpdf:itextpdf:5.5.13.3'
 	implementation 'com.itextpdf.tool:xmlworker:5.5.13.3'
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	implementation 'org.simplejavamail:outlook-message-parser:1.9.0'
 
-	compileOnly 'org.projectlombok:lombok:1.18.24'
-	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 	annotationProcessor "org.springframework:spring-context-indexer:5.3.20"
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
@@ -71,4 +56,24 @@ jar {
 
 test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport // report is always generated after tests run
+}
+
+plugins.withType(JacocoPlugin) {
+	tasks["test"].finalizedBy 'jacocoTestReport'
+}
+
+jacocoTestReport {
+	dependsOn test // tests are required to run before generating the report
+	reports {
+		xml.required = true
+		html.required = false
+		csv.required = false
+		//for XML
+		xml.destination file("${buildDir}/reports/jacoco.xml")
+	}
+}
+
+jacoco {
+	toolVersion = "0.8.8"
 }
