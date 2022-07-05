@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/hocs-libreoffice-build as builder
+FROM quay.io/ukhomeofficedigital/hocs-base-image-build as builder
 
 USER root
 
