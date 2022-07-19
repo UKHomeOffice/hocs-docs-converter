@@ -36,7 +36,7 @@ dependencies {
 	implementation 'com.itextpdf:itextpdf:5.5.13.3'
 	implementation 'com.itextpdf.tool:xmlworker:5.5.13.3'
 	implementation 'org.apache.commons:commons-lang3:3.12.0'
-	implementation 'org.simplejavamail:outlook-message-parser:1.9.4'
+	implementation 'org.simplejavamail:outlook-message-parser:1.9.6'
 
 	compileOnly "org.projectlombok:lombok:${lombokVersion}"
 	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
