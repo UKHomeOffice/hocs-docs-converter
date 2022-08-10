@@ -6,7 +6,14 @@ COPY . .
 
 RUN ./gradlew clean assemble --no-daemon && java -Djarmode=layertools -jar ./build/libs/hocs-*.jar extract
 
-FROM quay.io/ukhomeofficedigital/hocs-libreoffice
+FROM quay.io/ukhomeofficedigital/hocs-base-image
+
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:libreoffice/ppa && \
+    apt-get install libreoffice --no-install-recommends  --no-install-suggests -y && \
+    apt-get clean
 
 WORKDIR /app
 
