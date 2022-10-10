@@ -1,6 +1,6 @@
 {{- define "deployment.envs" }}
 - name: JAVA_OPTS
-  value: '{{ tpl .Values.app.javaOpts . }}'
+  value: '{{ tpl .Values.app.env.javaOpts . }}'
 - name: SERVER_PORT
   value: '{{ include "hocs-app.port" . }}'
 {{- end -}}
