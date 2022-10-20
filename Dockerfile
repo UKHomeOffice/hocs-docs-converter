@@ -13,6 +13,8 @@ RUN apt-get update && \
     apt-get install -y software-properties-common && \
     add-apt-repository ppa:libreoffice/ppa && \
     apt-get install libreoffice --no-install-recommends  --no-install-suggests -y && \
+    echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections && \
+    apt-get install -y ttf-mscorefonts-installer && \
     apt-get clean
 
 WORKDIR /app
