@@ -31,7 +31,7 @@ dependencies {
 	implementation 'org.jodconverter:jodconverter-local:4.4.5'
 	implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jaxbVersion}"
 	implementation "com.sun.xml.bind:jaxb-impl:${jaxbVersion}"
-	implementation 'jakarta.activation:jakarta.activation-api:2.1.0'
+	implementation 'jakarta.activation:jakarta.activation-api:2.1.1'
 
 	implementation 'com.itextpdf:itextpdf:5.5.13.3'
 	implementation 'com.itextpdf.tool:xmlworker:5.5.13.3'
