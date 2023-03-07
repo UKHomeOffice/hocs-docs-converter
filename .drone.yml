@@ -10,20 +10,19 @@ trigger:
 
 steps:
   - name: checkout
-    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.0
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.1
     commands:
       - git fetch --tags
       - git checkout ${DRONE_TAG}
       - git submodule update --init --recursive
 
-  - &deploy
-    name: cs-dev
-    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.0
+  - name: hocs-converter
+    image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.1
     environment:
       CHART_NAME: hocs-docs-converter
       CHART_VERSION: ^4.0.0
       KUBE_CLUSTER: acp-notprod
-      KUBE_NAMESPACE: cs-dev
+      KUBE_NAMESPACE: hocs-converter
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
       KUBE_TOKEN:
         from_secret: cs_notprod
@@ -32,10 +31,3 @@ steps:
       - ./ci/helm/helm-chart-deploy.sh --values ./helm/hocs-docs-converter.yaml
     depends_on:
       - checkout
-
-  - <<: *deploy
-    name: wcs-dev
-    environment:
-      KUBE_NAMESPACE: wcs-dev
-    depends_on:
-      - cs-dev
