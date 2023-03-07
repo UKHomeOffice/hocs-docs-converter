@@ -75,7 +75,7 @@ public class DocumentConversionService {
                 }
 
             } catch (OfficeException | DocumentException | IOException e) {
-                throw new ApplicationExceptions.DocumentConversionException(String.format("Failed to convert document %s", file.getOriginalFilename()), DOCUMENT_CONVERSION_FAILURE, e);
+                throw new ApplicationExceptions.DocumentConversionException(String.format("Failed to convert document %s for reason %s", file.getOriginalFilename(), e.getMessage()), DOCUMENT_CONVERSION_FAILURE, e);
             }
 
             log.info("Document Conversion complete for {}. Event {}", file.getOriginalFilename(), value(EVENT, DOCUMENT_CONVERSION_SUCCESS));
