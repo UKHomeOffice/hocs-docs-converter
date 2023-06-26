@@ -34,13 +34,14 @@ public class MSGConversionResourceTest {
     @Value("classpath:testdata/sample3.msg")
     private Resource msg3;
 
+    @Value("classpath:testdata/sample4.MSG")
+    private Resource msg4;
+
     @Autowired
     private TestRestTemplate restTemplate;
 
-
     @Test
     public void testMsg1_Ok() throws IOException {
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
@@ -52,12 +53,10 @@ public class MSGConversionResourceTest {
                 byte[].class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
     }
 
     @Test
     public void testMsg2_Ok() throws IOException {
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
@@ -69,12 +68,10 @@ public class MSGConversionResourceTest {
                 byte[].class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
     }
 
     @Test
     public void testMsg3_Ok() throws IOException {
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
@@ -86,7 +83,21 @@ public class MSGConversionResourceTest {
                 byte[].class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 
+    @Test
+    public void testWithCapitalisedExtension() throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "multipart/form-data");
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.set("file", new FileSystemResource(msg4.getFile()));
+
+        ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
 }

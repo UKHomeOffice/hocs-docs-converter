@@ -47,7 +47,7 @@ public class MsgDocumentConverterTest {
                 Arguments.of("src/test/resources/testdata/sample1.msg", 23660),
                 Arguments.of("src/test/resources/testdata/sample2.msg", 23660),
                 Arguments.of("src/test/resources/testdata/sample3.msg", 23659),
-                Arguments.of("src/test/resources/testdata/sample4.msg", 985)
+                Arguments.of("src/test/resources/testdata/sample4.MSG", 985)
         );
     }
 
@@ -81,6 +81,7 @@ public class MsgDocumentConverterTest {
     @Test
     public void checkSupport() {
         assertTrue(msgDocumentConverter.isSupported("msg"));
+        assertTrue(msgDocumentConverter.isSupported("MSG"));
 
         assertFalse(msgDocumentConverter.isSupported("jpg"));
         assertFalse(msgDocumentConverter.isSupported("png"));
@@ -97,7 +98,7 @@ public class MsgDocumentConverterTest {
 
     @Test
     public void extractContents_sample4() throws IOException, DocumentException {
-        FileInputStream fileInputStream = new FileInputStream("src/test/resources/testdata/sample4.msg");
+        FileInputStream fileInputStream = new FileInputStream("src/test/resources/testdata/sample4.MSG");
 
         MsgContents result = msgDocumentConverter.extractContents(fileInputStream);
 

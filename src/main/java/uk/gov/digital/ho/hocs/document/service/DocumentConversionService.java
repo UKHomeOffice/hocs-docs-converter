@@ -48,10 +48,11 @@ public class DocumentConversionService {
         if (fileExtension == null) {
             throw new ApplicationExceptions.DocumentFormatException(String.format("Cannot determine document format: %s", file.getOriginalFilename()), DOCUMENT_CONVERSION_INVALID_FORMAT);
         } else {
-            fileExtension = fileExtension.trim();
+            fileExtension = fileExtension
+                    .trim()
+                    .toLowerCase();
 
             try (InputStream inputStream = file.getInputStream()) {
-
                 DocumentFormat supportedJodFormat = DefaultDocumentFormatRegistry.getFormatByExtension(fileExtension);
 
                 if (fileExtension.equalsIgnoreCase("pdf")){

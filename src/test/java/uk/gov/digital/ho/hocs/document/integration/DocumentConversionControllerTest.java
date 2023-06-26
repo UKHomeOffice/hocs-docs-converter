@@ -55,6 +55,9 @@ public class DocumentConversionControllerTest {
     @Value("classpath:testdata/sample")
     private Resource none;
 
+    @Value("classpath:testdata/sampleCapitalisedExtension.TXT")
+    private Resource txtCapitalisedExtension;
+
     @Value("classpath:converted/sample.tif.pdf")
     private Resource tifPdf;
 
@@ -66,7 +69,6 @@ public class DocumentConversionControllerTest {
 
     @Value("classpath:converted/sample.jpg.pdf")
     private Resource jpgPdf;
-
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -140,6 +142,8 @@ public class DocumentConversionControllerTest {
 
     }
 
+
+
     @Test
     public void shouldReturn200ForDOCX() throws IOException {
 
@@ -171,6 +175,21 @@ public class DocumentConversionControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
+    }
+
+    @Test
+    public void testFailsWithCapitalisedExtension() throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "multipart/form-data");
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.set("file", new FileSystemResource(txtCapitalisedExtension.getFile()));
+
+        ResponseEntity<byte[]> response = restTemplate.exchange("/convert",
+                HttpMethod.POST,
+                new HttpEntity<>(map, headers),
+                byte[].class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -266,7 +285,6 @@ public class DocumentConversionControllerTest {
 
     @Test
     public void testOkExtDocConverterPngAndContents() throws IOException {
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "multipart/form-data");
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
