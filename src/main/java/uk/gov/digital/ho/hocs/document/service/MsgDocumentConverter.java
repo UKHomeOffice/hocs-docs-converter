@@ -35,8 +35,6 @@ import static uk.gov.digital.ho.hocs.document.application.LogEvent.EXCEPTION;
 @Service
 class MsgDocumentConverter {
 
-    private static final List<String> SUPPORTED_EXTENSIONS = List.of("msg");
-
     private final ImageDocumentConverter imageDocumentConverter;
 
     public MsgDocumentConverter(ImageDocumentConverter imageDocumentConverter) {
@@ -44,7 +42,7 @@ class MsgDocumentConverter {
     }
 
     public boolean isSupported(String fileExtension) {
-        return SUPPORTED_EXTENSIONS.contains(fileExtension);
+        return "msg".equalsIgnoreCase(fileExtension);
     }
 
     public void convertToPdf(Document pdf, InputStream inputStream) throws DocumentException, IOException {
