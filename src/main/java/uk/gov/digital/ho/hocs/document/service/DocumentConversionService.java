@@ -1,8 +1,7 @@
 package uk.gov.digital.ho.hocs.document.service;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -61,7 +60,7 @@ public class DocumentConversionService {
                     IOUtils.copy(inputStream, outputStream);
                     return;
                 } else if (imageDocumentConverter.isSupported(fileExtension)) {
-                    convertImageToPdf(fileExtension, inputStream, outputStream);
+                    convertImageToPdf(inputStream, outputStream);
                 } else if (msgDocumentConverter.isSupported(fileExtension)) {
                     convertMsgToPdf(inputStream, outputStream);
                 } else if (supportedJodFormat != null) {
@@ -75,7 +74,7 @@ public class DocumentConversionService {
                     throw new ApplicationExceptions.DocumentFormatException(String.format("Cannot convert document type: %s, unsupported file format", file.getOriginalFilename()), DOCUMENT_CONVERSION_INVALID_FORMAT);
                 }
 
-            } catch (OfficeException | DocumentException | IOException e) {
+            } catch (OfficeException | IOException e) {
                 throw new ApplicationExceptions.DocumentConversionException(String.format("Failed to convert document %s for reason %s", file.getOriginalFilename(), e.getMessage()), DOCUMENT_CONVERSION_FAILURE, e);
             }
 
@@ -83,19 +82,17 @@ public class DocumentConversionService {
         }
     }
 
-    private void convertImageToPdf(String fileExtension, InputStream inputStream, OutputStream outputStream) throws DocumentException, IOException {
-        Document pdf = new Document();
-        PdfWriter.getInstance(pdf, outputStream);
-        pdf.open();
-        imageDocumentConverter.convertToPdf(pdf, fileExtension, inputStream);
+    private void convertImageToPdf(InputStream inputStream, OutputStream outputStream) throws IOException {
+        PDDocument pdf = new PDDocument();
+        imageDocumentConverter.convertToPdf(pdf, inputStream);
+        pdf.save(outputStream);
         pdf.close();
     }
 
-    private void convertMsgToPdf(InputStream inputStream, OutputStream outputStream) throws DocumentException, IOException {
-        Document pdf = new Document();
-        PdfWriter.getInstance(pdf, outputStream);
-        pdf.open();
+    private void convertMsgToPdf(InputStream inputStream, OutputStream outputStream) throws IOException {
+        PDDocument pdf = new PDDocument();
         msgDocumentConverter.convertToPdf(pdf, inputStream);
+        pdf.save(outputStream);
         pdf.close();
     }
 }

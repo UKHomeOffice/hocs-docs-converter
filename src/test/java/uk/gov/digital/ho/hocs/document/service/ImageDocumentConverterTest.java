@@ -1,8 +1,6 @@
 package uk.gov.digital.ho.hocs.document.service;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,24 +38,23 @@ public class ImageDocumentConverterTest {
 
     @ParameterizedTest
     @MethodSource("getFiles")
-    public void textExtendedDocumentConverterTiffDirectly(String resourcePath, String extension, int size) throws IOException, DocumentException {
+    public void textExtendedDocumentConverterTiffDirectly(String resourcePath, String extension, int size) throws IOException {
 
         Resource resource = new FileSystemResource(resourcePath);
         FileInputStream inputStream = new FileInputStream(resource.getFile());
 
-        Document pdf = new Document();
+        PDDocument pdf = new PDDocument();
         try (ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream()) {
-            PdfWriter.getInstance(pdf, arrayOutputStream);
-            pdf.open();
 
-            imageDocumentConverter.convertToPdf(pdf, extension, inputStream);
+            imageDocumentConverter.convertToPdf(pdf, inputStream);
 
             pdf.close();
             inputStream.close();
-            assertEquals(size, arrayOutputStream.toByteArray().length);
+            assertEquals(1, pdf.getNumberOfPages());
 
             //Write the file to the project root, so we can inspect it if we want
             FileOutputStream fos = new FileOutputStream("sample." + extension + ".pdf");
+            pdf.save(arrayOutputStream);
             fos.write(arrayOutputStream.toByteArray());
             fos.flush();
             fos.close();
