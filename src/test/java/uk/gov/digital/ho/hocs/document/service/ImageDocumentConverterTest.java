@@ -48,7 +48,6 @@ public class ImageDocumentConverterTest {
 
             imageDocumentConverter.convertToPdf(pdf, inputStream);
 
-            pdf.close();
             inputStream.close();
             assertEquals(1, pdf.getNumberOfPages());
 
@@ -58,6 +57,7 @@ public class ImageDocumentConverterTest {
             fos.write(arrayOutputStream.toByteArray());
             fos.flush();
             fos.close();
+            pdf.close();
         }
     }
 
