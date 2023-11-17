@@ -39,14 +39,12 @@ class ImageDocumentConverter {
         float width = img.getWidth();
         float height = img.getHeight();
 
-        if (width > PDF_WIDTH) {
-            width = PDF_WIDTH;
-            height = height * (PDF_WIDTH / width);
-        }
+        height = height * (PDF_WIDTH / width);
+        width = PDF_WIDTH;
 
         if (height > PDF_HEIGHT) {
-            height = PDF_HEIGHT;
             width = width * (PDF_HEIGHT / height);
+            height = PDF_HEIGHT;
         }
 
         contentStream.drawImage(img, 0, 0, width, height);
