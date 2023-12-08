@@ -44,6 +44,11 @@ class MsgDocumentConverter {
     private final float leading = 1.5f * fontSize;
     private final PDFont font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
 
+    private static final String FROM_STRING = "From: %s [%s]";
+    private static final String TO_STRING = "To: %s";
+    private static final String SUBJECT_STRING = "Subject: %s";
+    private static final String SENT_ON_STRING = "Sent on: %s";
+
     public MsgDocumentConverter(ImageDocumentConverter imageDocumentConverter) {
         this.imageDocumentConverter = imageDocumentConverter;
     }
@@ -103,12 +108,13 @@ class MsgDocumentConverter {
     }
 
     public List<String> parseElements(MsgContents contents, PDDocument pdf) {
+
         try {
             ArrayList<String> paragraphs = new ArrayList<>(List.of(
-                    String.format("From: %s [%s]", contents.getFromEmail(), StringUtils.isEmpty(contents.getFromName()) ? "N/A" : contents.getFromName()),
-                    String.format("To: %s", StringUtils.isEmpty(contents.getToEmail()) ? contents.getToName() : contents.getToEmail()),
-                    String.format("Subject: %s", contents.getSubject().replaceAll("\\P{Print}", "")),
-                    String.format("Sent on: %s", contents.getSentOn())
+                    String.format(FROM_STRING, contents.getFromEmail(), StringUtils.isEmpty(contents.getFromName()) ? "N/A" : contents.getFromName()),
+                    String.format(TO_STRING, StringUtils.isEmpty(contents.getToEmail()) ? contents.getToName() : contents.getToEmail()),
+                    String.format(SUBJECT_STRING, contents.getSubject().replaceAll("\\P{Print}", "")),
+                    String.format(SENT_ON_STRING, contents.getSentOn())
             ));
 
             List<String> bodyParagraphs = Arrays.stream(contents.getBodyText().split("\r\n")).map(p -> p.replaceAll("\\P{Print}", "")).collect(Collectors.toList());
@@ -158,7 +164,7 @@ class MsgDocumentConverter {
             PDRectangle mediabox = pdf.getPage(0).getMediaBox();
             float height = mediabox.getHeight() - 2 * margin;
 
-            int i = 0;
+            int lineOnPage = 0;
             contentStream.beginText();
             contentStream.setFont(font, fontSize);
             contentStream.setLeading(leading);
@@ -168,8 +174,8 @@ class MsgDocumentConverter {
             {
                 contentStream.showText(line);
                 contentStream.newLineAtOffset(0, -leading);
-                i++;
-                if (i * leading > height) {
+                lineOnPage++;
+                if (lineOnPage * leading > height) {
                     contentStream.endText();
                     contentStream.close();
 
@@ -182,7 +188,7 @@ class MsgDocumentConverter {
                     contentStream.setLeading(leading);
                     contentStream.newLineAtOffset(margin, 700);
 
-                    i = 0;
+                    lineOnPage = 0;
                 }
             }
 
