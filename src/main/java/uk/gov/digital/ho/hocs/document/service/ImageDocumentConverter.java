@@ -34,20 +34,19 @@ class ImageDocumentConverter {
         PDImageXObject img = PDImageXObject.createFromByteArray(pdf, inputStream.readAllBytes(), null);
         PDPage page = new PDPage(new PDRectangle(PDF_WIDTH, PDF_HEIGHT));
         pdf.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(pdf, page);
+        try (PDPageContentStream contentStream = new PDPageContentStream(pdf, page)) {
+            float width = img.getWidth();
+            float height = img.getHeight();
 
-        float width = img.getWidth();
-        float height = img.getHeight();
+            height = height * (PDF_WIDTH / width);
+            width = PDF_WIDTH;
 
-        height = height * (PDF_WIDTH / width);
-        width = PDF_WIDTH;
+            if (height > PDF_HEIGHT) {
+                width = width * (PDF_HEIGHT / height);
+                height = PDF_HEIGHT;
+            }
 
-        if (height > PDF_HEIGHT) {
-            width = width * (PDF_HEIGHT / height);
-            height = PDF_HEIGHT;
+            contentStream.drawImage(img, 0, 0, width, height);
         }
-
-        contentStream.drawImage(img, 0, 0, width, height);
-        contentStream.close();
     }
 }

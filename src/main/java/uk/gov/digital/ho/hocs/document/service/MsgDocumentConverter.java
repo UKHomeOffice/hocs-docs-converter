@@ -62,10 +62,14 @@ class MsgDocumentConverter {
 
         PDPage page = new PDPage();
         pdf.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(pdf, page, PDPageContentStream.AppendMode.APPEND, true, true);
-
         List<String> pdfContents = parseElements(contents, pdf);
-        printContents(contentStream, pdfContents, pdf);
+
+        try (PDPageContentStream contentStream = new PDPageContentStream(pdf, page, PDPageContentStream.AppendMode.APPEND, true, true)){
+            printContents(contentStream, pdfContents, pdf);
+        } catch (IOException e) {
+            log.warn("Failed to print MSG document: {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_MSG_PARSE_FAILURE), value(EXCEPTION, e));
+            throw e;
+        }
 
         for (OutlookAttachment attachment : contents.getAttachments()) {
             processAttachment(pdf, attachment);
@@ -107,7 +111,7 @@ class MsgDocumentConverter {
         return contents;
     }
 
-    public List<String> parseElements(MsgContents contents, PDDocument pdf) {
+    public List<String> parseElements(MsgContents contents, PDDocument pdf) throws IOException {
 
         try {
             ArrayList<String> paragraphs = new ArrayList<>(List.of(
@@ -155,51 +159,47 @@ class MsgDocumentConverter {
             return lines;
         } catch (IOException e) {
             log.warn("Failed to Parse MSG Elements: {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_MSG_PARSE_FAILURE), value(EXCEPTION, e));
-            return List.of();
+            throw e;
         }
     }
 
-    public void printContents(PDPageContentStream contentStream, List<String> lines, PDDocument pdf) {
-        try {
-            PDRectangle mediabox = pdf.getPage(0).getMediaBox();
-            float height = mediabox.getHeight() - 2 * margin;
+    public void printContents(PDPageContentStream contentStream, List<String> lines, PDDocument pdf) throws IOException {
+        PDRectangle mediabox = pdf.getPage(0).getMediaBox();
+        float height = mediabox.getHeight() - 2 * margin;
 
-            int lineOnPage = 0;
-            contentStream.beginText();
-            contentStream.setFont(font, fontSize);
-            contentStream.setLeading(leading);
-            contentStream.newLineAtOffset(margin, 700);
+        int lineOnPage = 0;
+        contentStream.beginText();
+        contentStream.setFont(font, fontSize);
+        contentStream.setLeading(leading);
+        contentStream.newLineAtOffset(margin, 700);
 
-            for (String line: lines)
-            {
-                contentStream.showText(line);
-                contentStream.newLineAtOffset(0, -leading);
-                lineOnPage++;
-                if (lineOnPage * leading > height) {
-                    contentStream.endText();
-                    contentStream.close();
+        for (String line: lines)
+        {
+            contentStream.showText(line);
+            contentStream.newLineAtOffset(0, -leading);
+            lineOnPage++;
+            if (lineOnPage * leading > height) {
+                contentStream.endText();
+                contentStream.close();
 
-                    PDPage page = new PDPage();
-                    pdf.addPage(page);
-                    contentStream = new PDPageContentStream(pdf, page, PDPageContentStream.AppendMode.APPEND, true, true);
+                PDPage page = new PDPage();
+                pdf.addPage(page);
+                contentStream = new PDPageContentStream(pdf, page, PDPageContentStream.AppendMode.APPEND, true, true);
 
-                    contentStream.beginText();
-                    contentStream.setFont(font, fontSize);
-                    contentStream.setLeading(leading);
-                    contentStream.newLineAtOffset(margin, 700);
+                contentStream.beginText();
+                contentStream.setFont(font, fontSize);
+                contentStream.setLeading(leading);
+                contentStream.newLineAtOffset(margin, 700);
 
-                    lineOnPage = 0;
-                }
+                lineOnPage = 0;
             }
-
-            contentStream.endText();
-            contentStream.close();
-        } catch (IOException e) {
-            log.warn("Failed to print MSG document: {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_MSG_PARSE_FAILURE), value(EXCEPTION, e));
         }
+
+        contentStream.endText();
+        contentStream.close();
     }
 
-    private void processAttachment(PDDocument pdf, OutlookAttachment attachment) {
+    private void processAttachment(PDDocument pdf, OutlookAttachment attachment) throws IOException {
         // we don't process messages containing messages
         if (!(attachment instanceof OutlookFileAttachment)) {
             return;
@@ -212,6 +212,7 @@ class MsgDocumentConverter {
         } catch (IOException ex) {
             log.warn("Failed to process attachment for conversion.", ex.getMessage(),
                     value(EVENT, DOCUMENT_CONVERSION_MSG_ATTACHMENT_PARSE_FAILURE), value(EXCEPTION, ex));
+            throw ex;
         }
     }
 }
