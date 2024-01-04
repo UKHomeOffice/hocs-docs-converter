@@ -115,7 +115,7 @@ public class MsgDocumentConverterTest {
     }
 
     @Test
-    public void testDocumentContentsParseCorrectly() {
+    public void testDocumentContentsParseCorrectly() throws IOException {
         String fromEmail = "from@email.test";
         String fromName = "from name";
         String subject = "subject";
