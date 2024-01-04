@@ -59,6 +59,10 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
+    <logger name="org.apache.pdfbox" additivity="false" level="ERROR">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
     <root level="INFO">
         <appender-ref ref="consoleAppender"/>
     </root>
