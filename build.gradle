@@ -33,7 +33,7 @@ dependencies {
 	implementation "com.sun.xml.bind:jaxb-impl:${jaxbVersion}"
 	implementation 'jakarta.activation:jakarta.activation-api:2.1.2'
 
-	implementation 'org.apache.pdfbox:pdfbox:3.0.0'
+	implementation 'org.apache.pdfbox:pdfbox:3.0.1'
 	implementation 'org.apache.commons:commons-lang3:3.13.0'
 	implementation 'org.simplejavamail:outlook-message-parser:1.9.6'
 
