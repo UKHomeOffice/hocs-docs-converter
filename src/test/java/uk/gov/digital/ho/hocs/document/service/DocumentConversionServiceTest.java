@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.document.service;
 
-import com.itextpdf.text.DocumentException;
 import org.jodconverter.core.DocumentConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ public class DocumentConversionServiceTest {
     }
 
     @Test
-    public void shouldPassThroughPdfUnchanged() throws DocumentException, IOException {
+    public void shouldPassThroughPdfUnchanged() throws IOException {
         MultipartFile multipartFile = generateMultipartFile("testFile.pdf", "testFile.pdf");
         ByteArrayOutputStream result = new ByteArrayOutputStream();
 

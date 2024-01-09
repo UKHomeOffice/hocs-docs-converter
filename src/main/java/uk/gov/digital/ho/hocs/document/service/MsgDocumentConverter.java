@@ -1,29 +1,31 @@
 package uk.gov.digital.ho.hocs.document.service;
 
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.tool.xml.ElementList;
-import com.itextpdf.tool.xml.XMLWorkerHelper;
-import com.itextpdf.tool.xml.exceptions.RuntimeWorkerException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.simplejavamail.outlookmessageparser.OutlookMessageParser;
 import org.simplejavamail.outlookmessageparser.model.OutlookAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookFileAttachment;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.document.application.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.document.domain.MsgContents;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.document.application.LogEvent.DOCUMENT_CONVERSION_MSG_ATTACHMENT_PARSE_FAILURE;
@@ -37,6 +39,16 @@ class MsgDocumentConverter {
 
     private final ImageDocumentConverter imageDocumentConverter;
 
+    private final float fontSize = 12;
+    private final float margin = 72;
+    private final float leading = 1.5f * fontSize;
+    private final PDFont font = new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+
+    private static final String FROM_STRING = "From: %s [%s]";
+    private static final String TO_STRING = "To: %s";
+    private static final String SUBJECT_STRING = "Subject: %s";
+    private static final String SENT_ON_STRING = "Sent on: %s";
+
     public MsgDocumentConverter(ImageDocumentConverter imageDocumentConverter) {
         this.imageDocumentConverter = imageDocumentConverter;
     }
@@ -45,18 +57,18 @@ class MsgDocumentConverter {
         return "msg".equalsIgnoreCase(fileExtension);
     }
 
-    public void convertToPdf(Document pdf, InputStream inputStream) throws DocumentException, IOException {
+    public void convertToPdf(PDDocument pdf, InputStream inputStream) throws IOException {
         MsgContents contents = extractContents(inputStream);
 
-        pdf.newPage();
-        pdf.add(new Paragraph(String.format("From: %s [%s]", contents.getFromEmail(), StringUtils.isEmpty(contents.getFromName()) ? "N/A" : contents.getFromName())));
-        pdf.add(new Paragraph(MessageFormat.format("To: {0}", StringUtils.isEmpty(contents.getToEmail()) ? contents.getToName() : contents.getToEmail())));
-        pdf.add(new Paragraph("Subject: " + contents.getSubject()));
-        pdf.add(new Paragraph("Sent on: " + contents.getSentOn()));
+        PDPage page = new PDPage();
+        pdf.addPage(page);
+        List<String> pdfContents = parseElements(contents, pdf);
 
-        if (!parseElements(pdf, contents)) {
-            pdf.add(new Paragraph(""));
-            pdf.add(new Paragraph(contents.getBodyText()));
+        try (PDPageContentStream contentStream = new PDPageContentStream(pdf, page, PDPageContentStream.AppendMode.APPEND, true, true)){
+            printContents(contentStream, pdfContents, pdf);
+        } catch (IOException e) {
+            log.warn("Failed to print MSG document: {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_MSG_PARSE_FAILURE), value(EXCEPTION, e));
+            throw e;
         }
 
         for (OutlookAttachment attachment : contents.getAttachments()) {
@@ -64,11 +76,11 @@ class MsgDocumentConverter {
         }
     }
 
-    public MsgContents extractContents(InputStream inputStream) throws DocumentException, IOException {
+    public MsgContents extractContents(InputStream inputStream) throws IOException {
         OutlookMessage message = new OutlookMessageParser().parseMsg(inputStream);
 
         if (message == null) {
-            throw new DocumentException("Invalid MSG Contents");
+            throw new ApplicationExceptions.DocumentConversionException("Invalid MSG Contents", DOCUMENT_CONVERSION_MSG_PARSE_FAILURE);
         }
         MsgContents contents = new MsgContents();
         contents.setFromEmail(StringUtils.defaultString(message.getFromEmail(), StringUtils.EMPTY));
@@ -99,41 +111,108 @@ class MsgDocumentConverter {
         return contents;
     }
 
-    private boolean parseElements(Document document, MsgContents contents) {
-        if (StringUtils.isEmpty(contents.getBodyHTML())) {
-            return false;
-        }
+    public List<String> parseElements(MsgContents contents, PDDocument pdf) throws IOException {
+
         try {
-            ElementList elements = XMLWorkerHelper.parseToElementList(contents.getBodyHTML(), null);
-            if (!elements.isEmpty()) {
-                document.add(new Paragraph(""));
-                for (Element element : elements) {
-                    document.add(element);
+            ArrayList<String> paragraphs = new ArrayList<>(List.of(
+                    String.format(FROM_STRING, contents.getFromEmail(), StringUtils.isEmpty(contents.getFromName()) ? "N/A" : contents.getFromName()),
+                    String.format(TO_STRING, StringUtils.isEmpty(contents.getToEmail()) ? contents.getToName() : contents.getToEmail()),
+                    String.format(SUBJECT_STRING, contents.getSubject().replaceAll("\\P{Print}", "")),
+                    String.format(SENT_ON_STRING, contents.getSentOn())
+            ));
+
+            List<String> bodyParagraphs = Arrays.stream(contents.getBodyText().split("\r\n")).map(p -> p.replaceAll("\\P{Print}", "")).collect(Collectors.toList());
+
+            paragraphs.addAll(bodyParagraphs);
+
+            PDRectangle mediabox = pdf.getPage(0).getMediaBox();
+            float width = mediabox.getWidth() - 2 * margin;
+
+            List<String> lines = new ArrayList<>();
+
+            for (String paragraph : paragraphs) {
+                if (paragraph.length() == 0) {
+                    lines.add("");
+                }
+                int lastSpace = -1;
+                while (paragraph.length() > 0) {
+                    int spaceIndex = paragraph.indexOf(' ', lastSpace + 1);
+                    if (spaceIndex < 0)
+                        spaceIndex = paragraph.length();
+                    String subString = paragraph.substring(0, spaceIndex);
+                    float size = fontSize * font.getStringWidth(subString) / 1000;
+                    if (size > width) {
+                        if (lastSpace < 0)
+                            lastSpace = spaceIndex;
+                        subString = paragraph.substring(0, lastSpace);
+                        lines.add(subString);
+                        paragraph = paragraph.substring(lastSpace).trim();
+                        lastSpace = -1;
+                    } else if (spaceIndex == paragraph.length()) {
+                        lines.add(paragraph);
+                        paragraph = "";
+                    } else {
+                        lastSpace = spaceIndex;
+                    }
                 }
             }
-        } catch (RuntimeWorkerException | DocumentException | IOException e) {
+            return lines;
+        } catch (IOException e) {
             log.warn("Failed to Parse MSG Elements: {}", e.getMessage(), value(EVENT, DOCUMENT_CONVERSION_MSG_PARSE_FAILURE), value(EXCEPTION, e));
-            return false;
+            throw e;
         }
-        return true;
     }
 
-    private void processAttachment(Document pdf, OutlookAttachment attachment) throws DocumentException {
+    public void printContents(PDPageContentStream contentStream, List<String> lines, PDDocument pdf) throws IOException {
+        PDRectangle mediabox = pdf.getPage(0).getMediaBox();
+        float height = mediabox.getHeight() - 2 * margin;
+
+        int lineOnPage = 0;
+        contentStream.beginText();
+        contentStream.setFont(font, fontSize);
+        contentStream.setLeading(leading);
+        contentStream.newLineAtOffset(margin, 700);
+
+        for (String line: lines)
+        {
+            contentStream.showText(line);
+            contentStream.newLineAtOffset(0, -leading);
+            lineOnPage++;
+            if (lineOnPage * leading > height) {
+                contentStream.endText();
+                contentStream.close();
+
+                PDPage page = new PDPage();
+                pdf.addPage(page);
+                contentStream = new PDPageContentStream(pdf, page, PDPageContentStream.AppendMode.APPEND, true, true);
+
+                contentStream.beginText();
+                contentStream.setFont(font, fontSize);
+                contentStream.setLeading(leading);
+                contentStream.newLineAtOffset(margin, 700);
+
+                lineOnPage = 0;
+            }
+        }
+
+        contentStream.endText();
+        contentStream.close();
+    }
+
+    private void processAttachment(PDDocument pdf, OutlookAttachment attachment) throws IOException {
         // we don't process messages containing messages
         if (!(attachment instanceof OutlookFileAttachment)) {
             return;
         }
-
         OutlookFileAttachment fileAttachment = (OutlookFileAttachment) attachment;
-
         // Only process attachments if they are images
         try {
             imageDocumentConverter.convertToPdf(pdf,
-                    StringUtils.remove(fileAttachment.getExtension(), "."),
                     new ByteArrayInputStream(fileAttachment.getData()));
-        } catch (IOException | BadElementException ex) {
+        } catch (IOException ex) {
             log.warn("Failed to process attachment for conversion.", ex.getMessage(),
                     value(EVENT, DOCUMENT_CONVERSION_MSG_ATTACHMENT_PARSE_FAILURE), value(EXCEPTION, ex));
+            throw ex;
         }
     }
 }

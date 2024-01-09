@@ -1,28 +1,21 @@
 package uk.gov.digital.ho.hocs.document.service;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Jpeg;
-import com.itextpdf.text.io.RandomAccessSource;
-import com.itextpdf.text.io.RandomAccessSourceFactory;
-import com.itextpdf.text.pdf.RandomAccessFileOrArray;
-import com.itextpdf.text.pdf.codec.GifImage;
-import com.itextpdf.text.pdf.codec.PngImage;
-import com.itextpdf.text.pdf.codec.TiffImage;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @Service
 class ImageDocumentConverter {
 
-    private static final int PDF_WIDTH = 595;
-    private static final int PDF_HEIGHT = 842;
+    private static final float PDF_WIDTH = 595;
+    private static final float PDF_HEIGHT = 842;
 
     private static final String TIF_EXT = "tif";
     private static final String TIFF_EXT = "tiff";
@@ -37,44 +30,23 @@ class ImageDocumentConverter {
         return Arrays.stream(SUPPORTED_EXTENSIONS).anyMatch(it -> it.equalsIgnoreCase(fileExtension));
     }
 
-    public void convertToPdf(Document pdf, String ext, InputStream inputStream) throws DocumentException, IOException {
+    public void convertToPdf(PDDocument pdf, InputStream inputStream) throws IOException {
+        PDImageXObject img = PDImageXObject.createFromByteArray(pdf, inputStream.readAllBytes(), null);
+        PDPage page = new PDPage(new PDRectangle(PDF_WIDTH, PDF_HEIGHT));
+        pdf.addPage(page);
+        try (PDPageContentStream contentStream = new PDPageContentStream(pdf, page)) {
+            float width = img.getWidth();
+            float height = img.getHeight();
 
-        List<Image> images = new ArrayList<>();
+            height = height * (PDF_WIDTH / width);
+            width = PDF_WIDTH;
 
-        if (TIF_EXT.equalsIgnoreCase(ext) || TIFF_EXT.equalsIgnoreCase(ext)) {
-            images.addAll(convertTiff(inputStream));
-        } else if (JPG_EXT.equalsIgnoreCase(ext) || JPEG_EXT.equalsIgnoreCase(ext)) {
-            Image img = new Jpeg(inputStream.readAllBytes());
-            images.add(img);
-        } else if (GIF_EXT.equalsIgnoreCase(ext)) {
-            GifImage gif = new GifImage(inputStream.readAllBytes());
-            images.add(gif.getImage(1));
-        } else if (PNG_EXT.equalsIgnoreCase(ext)) {
-            Image img = PngImage.getImage(inputStream.readAllBytes());
-            images.add(img);
-        }
-
-        for (Image image : images) {
-            if (image == null) {
-                pdf.newPage();
-            } else {
-                pdf.newPage();
-                image.setAbsolutePosition(0, 0);
-                image.scaleToFit(PDF_WIDTH, PDF_HEIGHT);
-                pdf.add(image);
+            if (height > PDF_HEIGHT) {
+                width = width * (PDF_HEIGHT / height);
+                height = PDF_HEIGHT;
             }
-        }
-    }
 
-    private List<Image> convertTiff(InputStream inputStream) throws IOException {
-        RandomAccessSource source = new RandomAccessSourceFactory().createSource(inputStream.readAllBytes());
-        RandomAccessFileOrArray tiffFile = new RandomAccessFileOrArray(source);
-        int numberOfPages = TiffImage.getNumberOfPages(tiffFile);
-
-        List<Image> images = new ArrayList<>(numberOfPages);
-        for (int i = 1; i <= numberOfPages; i++) {
-            images.add(TiffImage.getTiffImage(tiffFile, i));
+            contentStream.drawImage(img, 0, 0, width, height);
         }
-        return images;
     }
 }
