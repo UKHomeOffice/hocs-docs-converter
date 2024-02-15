@@ -209,10 +209,9 @@ class MsgDocumentConverter {
         try {
             imageDocumentConverter.convertToPdf(pdf,
                     new ByteArrayInputStream(fileAttachment.getData()));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             log.warn("Failed to process attachment for conversion.", ex.getMessage(),
                     value(EVENT, DOCUMENT_CONVERSION_MSG_ATTACHMENT_PARSE_FAILURE), value(EXCEPTION, ex));
-            throw ex;
         }
     }
 }
